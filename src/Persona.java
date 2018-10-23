@@ -7,43 +7,31 @@ public class Persona {
     private String nombre;
     private String apellido;
     private String us;
-    private String pass;
+    private String permisos;
 
 
-    static {
-        try {
-            //String driver = getValor("driverClass");
-            Class.forName("com.mysql.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            System.out.println("No puedo cargar el driver JDBC de la BD");
-        }
+
+
+    public Persona(String nom, String apellido, String us, String permisos){
+        this.nombre = nom;
+        this.apellido = apellido;
+        this.us = us;
+        this.permisos = permisos;
     }
 
-    public Persona(String nom, String apellido, String us, String pass){
-        Connection con = null;
-
-        try {
-            con = DriverManager.getConnection("jdbc:mysql://localhost/proyecto", "root", "Cidacos1718");
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
+    public String getNombre(){
+        return this.nombre;
     }
 
-    public static int numUsuarios(){
-        return 0;
+    public String getApellido(){
+        return this.apellido;
     }
 
-    public String nombreUsuario(){
-        return "";
+    public String getUs(){
+        return this.us;
     }
 
-    public Persona datosUsuario(String us){
-        return new Persona("", "", "", "");
-    }
-
-    public static void main(String[] args) {
-        Persona p = new Persona("john", "montes", "grandu1", "12345");
+    public String getPermisos(){
+        return this.permisos;
     }
 }
