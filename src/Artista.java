@@ -9,6 +9,9 @@ public class Artista implements Serializable {
         this.nombre = n;
         this.genero = g;
     }
+    public Artista(){
+
+    }
 
     public String getNombre() {
         return nombre;

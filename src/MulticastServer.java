@@ -65,9 +65,9 @@ public class MulticastServer extends Thread{
                         ResultSet rs = ps.executeQuery();
                         String mensaje = null;
                         if(rs.next()){
-                            mensaje = "type | status; logueado | on";
+                            mensaje = "type|status;logueado|on";
                         }else{
-                            mensaje = "type | status; logueado | off";
+                            mensaje = "type|status;logueado|off";
                         }
 
                         try {
@@ -128,10 +128,10 @@ public class MulticastServer extends Thread{
                         int i = ps1.executeUpdate();
                         String mensaje1 = null;
                         if(i == 1){
-                            mensaje1 = "type | registro; registrado |" + " true";
+                            mensaje1 = "type|registro;registrado|" + " true";
                            System.out.println("Usuario creado");
                         }else{
-                            mensaje1 = "type | registro; registrado |" + " false";
+                            mensaje1 = "type|registro;registrado|" + " false";
                             System.out.println("Usuario no creado");
                         }
 
@@ -178,10 +178,10 @@ public class MulticastServer extends Thread{
                         int i = ps.executeUpdate();
                         String mensaje = null;
                         if(i == 1){
-                            mensaje = "type | ca_artist; creado |" + " true";
+                            mensaje = "type|ca_artist;creado|" + " true";
 
                         }else{
-                            mensaje = "type | ca_artist; creado |" + " false";
+                            mensaje = "type|ca_artist;creado|" + " false";
 
                         }
 
@@ -221,10 +221,10 @@ public class MulticastServer extends Thread{
                         int i = ps.executeUpdate();
                         String mensaje = null;
                         if(i == 1){
-                            mensaje = "type | ea_artist; eliminado |" + " true";
+                            mensaje = "type|ea_artist;eliminado|" + " true";
 
                         }else{
-                            mensaje = "type | ea_artist; eliminado |" + " false";
+                            mensaje = "type|ea_artist;eliminado|" + " false";
                         }
 
                         try {
@@ -264,7 +264,7 @@ public class MulticastServer extends Thread{
                         ResultSet rs = ps.executeQuery();
                         String mensaje = null;
                         if(rs.next()){
-                            mensaje = "type | da_artist; nombre |" + rs.getString(1) + "; genero |" + rs.getString(2);
+                            mensaje = "type|da_artist;nombre|" + rs.getString(1) + ";genero|" + rs.getString(2);
                         }
 
                         try {
@@ -289,7 +289,7 @@ public class MulticastServer extends Thread{
                     break;
 
                 case "a_album":
-                    System.out.println("Añadir artista");
+                    System.out.println("Añadir album");
 
                     String nomal = mapa.get("nombre");
                     String artista = mapa.get("artista");
@@ -311,9 +311,9 @@ public class MulticastServer extends Thread{
                         int i = ps.executeUpdate();
                         String mensaje = null;
                         if(i == 1){
-                            mensaje = "type | ca_album; creado |" + " true";
+                            mensaje = "type|ca_album;creado|" + " true";
                         }else{
-                            mensaje = "type | ca_album; creado |" + " false";
+                            mensaje = "type|ca_album;creado|" + " false";
                         }
 
                         try {
@@ -355,9 +355,9 @@ public class MulticastServer extends Thread{
 
                             if (rs.getRow() > 0) {
 
-                                mensaje = "type | ss_artist; existe |" + " true";
+                                mensaje = "type|ss_artist;existe|" + " true";
                             } else {
-                                mensaje = "type | ss_artist; existe |" + " false";
+                                mensaje = "type|ss_artist;existe|" + " false";
                             }
 
 
@@ -405,9 +405,9 @@ public class MulticastServer extends Thread{
 
                         if (i>=1) {
 
-                            mensaje = "type | redit_artist;  editado |" + " true";
+                            mensaje = "type|redit_artist; editado|" + " true";
                         } else {
-                            mensaje = "type | redit_artist; editado |" + " false";
+                            mensaje = "type|redit_artist;editado|" + " false";
                         }
 
 
@@ -431,6 +431,56 @@ public class MulticastServer extends Thread{
                             e.printStackTrace();
                         }
                     }
+                    break;
+                case "existe_album":
+
+                    System.out.println("Comprobacion de album");
+
+                    String exAlbum = mapa.get("nombre");
+                    String exArtista = mapa.get("artista");
+                    Connection con8 = null;
+                    try {
+                        con8 = DriverManager.getConnection(Config.URL, Config.USERDB, Config.PASSDB);
+
+                        String sql = "Select * from album where titulo='"+exAlbum+"' and NombreArtista='"+exArtista+"'";
+                        Statement ps = con8.createStatement();
+                        ResultSet rs= ps.executeQuery(sql);
+
+                        String mensaje = null;
+
+                        rs.next();
+
+                        if (rs.getRow() > 0) {
+
+                            mensaje = "type|rexiste_album;existe|" + " true";
+                        } else {
+                            mensaje = "type|rexiste_album;existe|" + " false";
+                        }
+
+
+                        try {
+                            sendUDPMessage(mensaje);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        ps.close();
+                        rs.close();
+
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }finally{
+                        try {
+                            if(con8 != null) {
+                                con8.close();
+                            }
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+
+
                     break;
                 default:
                     System.out.print("");
@@ -456,7 +506,7 @@ public class MulticastServer extends Thread{
     public void run() {
         MulticastSocket socket = null;
         try {
-            socket = new MulticastSocket(PORT);  // create socket without binding it (only for sending)
+            socket = new MulticastSocket(PORT); // create socket without binding it (only for sending)
             InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
             socket.joinGroup(group);
 
@@ -466,7 +516,7 @@ public class MulticastServer extends Thread{
                 socket.receive(packet);
                 System.out.println("Received packet from " + packet.getAddress().getHostAddress() + ":" + packet.getPort() + " with message:");
                 String message1 = new String(packet.getData(), 0, packet.getLength());
-                message1 = message1.replaceAll(" ", "").trim();
+                message1 = message1.trim();
                 cadena(message1);
 
                 try {

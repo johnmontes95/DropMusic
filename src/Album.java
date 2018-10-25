@@ -1,11 +1,13 @@
+import java.io.Serializable;
 import java.util.List;
 
-public class Album {
+public class Album implements Serializable {
     private String nombre;
     private Artista a;
     private String descripcion;
     private List<Cancion> canciones;
     private int numCanciones;
+    private int puntuacion;
 
     public Album(String nombre, Artista a, String descripcion){
         this.nombre = nombre;
@@ -53,6 +55,13 @@ public class Album {
         this.numCanciones = numCanciones;
     }
 
+    public int getPuntuacion() {
+        return puntuacion;
+    }
+
+    public void setPuntuacion(int puntuacion) {
+        this.puntuacion = puntuacion;
+    }
 
     public void menu(){
 

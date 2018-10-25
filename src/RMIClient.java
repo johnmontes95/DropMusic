@@ -30,6 +30,7 @@ public class RMIClient {
                         menuCrearArtista(server);
                         break;
                     case 2:
+                        menuCrearAlbum(server);
                         break;
                     case 3:
                         break;
@@ -122,6 +123,8 @@ public class RMIClient {
                     boolean r = server.eliminarArtista(a2);
                     if(r){
                         System.out.println("Artista eliminado.");
+                    }else{
+                        System.out.println("No existe ese artista");
                     }
                 } catch (RemoteException e) {
                     e.printStackTrace();
@@ -133,14 +136,73 @@ public class RMIClient {
 
     }
 
+
+   private static void menuCrearAlbum(RMIServerInterface server){
+
+       int n;
+       do {
+           System.out.println("1. Añadir Album");
+           System.out.println("2. Editar Album");
+           System.out.println("3. Eliminar Album");
+           System.out.println("4. Volver");
+           System.out.println("Selecciona una opción: ");
+           Scanner sc = new Scanner(System.in);
+           n = sc.nextInt();
+       }while(n < 0 || n > 4);
+
+       switch (n){
+           case 1:
+
+               System.out.println("Vas a añadir un nuevo album");
+               Scanner sc = new Scanner(System.in);
+               System.out.print("Introduce el titulo del album: ");
+               String titulo = sc.nextLine();
+               System.out.print("Introduce el nombre del artista: ");
+               String nombArtista = sc.nextLine();
+               System.out.print("Introduce una descripccion del album: ");
+               String descripcion = sc.nextLine();
+
+               Artista artista=new Artista();
+               artista.setNombre(nombArtista);
+               Album album = new Album(titulo,artista,descripcion);
+
+               System.out.println(album.getNombre());
+
+
+               try {
+                   boolean r = server.anadirAlbum(album);
+
+                   if(r){
+                       System.out.println("El album ha sido añadido correctamente.");
+                   }else{
+                       System.out.println("Ya existe un album con ese nombre");
+                   }
+               } catch (RemoteException e) {
+                   System.out.println("No se pudo añadir el album.");
+                   e.printStackTrace();
+               }
+               menuCrearAlbum(server);
+               break;
+           case 2:
+
+               break;
+
+
+
+
+           case 3:
+
+               break;
+           case 4:
+               break;
+       }
+
+   }
     public void menuGestion(){
         System.out.println("1. Registrarse");
         System.out.println("2. Autenticarse");
         System.out.println("3. Salir");
     }
-
-
-
     public static void main(String args[]) {
         try {
             RMIServerInterface server = (RMIServerInterface) LocateRegistry.getRegistry(7000).lookup("servidor");
