@@ -39,14 +39,24 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         return true;
     }
 
+/*    public Persona getPersona(String nomUsu) throws RemoteException {
+        String datos = "type | g_persona; nombre | " + nomUsu + "\n";
+        try {
+            sendUDPMessage(datos);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return true;
+    }*/
+
     @Override
     public boolean login(String user, String pass) throws RemoteException {
         boolean r = false;
         String datos = "type | login; username | " + user + "; password | " + pass + "\n";
         try {
             sendUDPMessage(datos);
-            String msg = mensajeUDP(receiveUDPMessage().replaceAll(" ", "").trim());
-            System.out.print(msg);
+            String msg = (String) mensajeUDP(receiveUDPMessage().replaceAll(" ", "").trim());
+
             if(msg.equals("on")){
                 r = true;
             }
@@ -54,6 +64,96 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             e.printStackTrace();
         }
         return r;
+    }
+
+    @Override
+    public boolean existeArtista(String nombre) throws RemoteException {
+        boolean r = false;
+        String datos = "type | s_artist; nombre | " + nombre + "\n";
+
+        try {
+            sendUDPMessage(datos);
+            String msg = (String) mensajeUDP(receiveUDPMessage().replaceAll(" ", "").trim());
+            r = msg.equals("true");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return r;
+    }
+
+    @Override
+    public boolean anadirArtista(String nombre, String genero) throws RemoteException {
+        boolean r = false;
+        String datos = "type | a_artist; nombre | " + nombre + "; genero | " + genero + "\n";
+
+        try {
+            sendUDPMessage(datos);
+            String msg = (String) mensajeUDP(receiveUDPMessage().replaceAll(" ", "").trim());
+            r = msg.equals("true");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return r;
+    }
+
+    @Override
+    public boolean editarArtista(Artista a) throws RemoteException {
+        return false;
+    }
+
+    public Artista obtenerArtista(String nombre) throws RemoteException{
+        String datos = "type | oa_artist; nombre | " + nombre + "\n";
+        Artista a = null;
+        try {
+            sendUDPMessage(datos);
+             a = (Artista) mensajeUDP(receiveUDPMessage().replaceAll(" ", "").trim());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return a;
+    }
+
+    @Override
+    public boolean eliminarArtista(String n) throws RemoteException {
+        boolean r = false;
+
+        String datos = "type | e_artist; nombre | " + n + "\n";
+
+        try {
+            sendUDPMessage(datos);
+            String msg = (String) mensajeUDP(receiveUDPMessage().replaceAll(" ", "").trim());
+            r = msg.equals("true");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return r;
+    }
+
+    @Override
+    public boolean anadirAlbum(Album a) throws RemoteException {
+        boolean r = false;
+
+        String datos = "type | a_album; nombre | " + a.getNombre() + "; artista | " + a.getA().getNombre() + "; descripcion |"  + a.getDescripcion() + "\n";
+
+        try {
+            sendUDPMessage(datos);
+            String msg = (String) mensajeUDP(receiveUDPMessage().replaceAll(" ", "").trim());
+            r = msg.equals("true");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return r;
+    }
+
+    @Override
+    public boolean editarAlbum(String n, String nn, String d) throws RemoteException {
+        return false;
+    }
+
+    @Override
+    public boolean eliminarAlbum(String n, String a) throws RemoteException {
+        return false;
     }
 
 
@@ -80,7 +180,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         return msg;
     }
 
-    public String mensajeUDP(String  c){
+    public Object mensajeUDP(String  c){
         String[] datos = c.split(";");
         String[] valor = null;
         HashMap<String, String> mapa = new HashMap<>();
@@ -90,11 +190,26 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             mapa.put(valor[0], valor[1]);
         }
 
-        String msg = null;
+        Object msg = null;
         String type = mapa.get("type");
         switch(type){
             case "status":
                 msg = mapa.get("logueado");
+                break;
+            case "ca_artist":
+                msg = mapa.get("creado");
+                break;
+            case "ea_artist":
+                msg = mapa.get("eliminado");
+                break;
+            case "ba_artist":
+                msg = mapa.get("eliminado");
+                break;
+            case "da_artist":
+                msg = new Artista(mapa.get("nombre"), mapa.get("genero"));
+                break;
+            case "ca_album":
+                msg = mapa.get("creado");
                 break;
             default:
                 System.out.println("Error");
