@@ -6,6 +6,44 @@ import java.rmi.registry.LocateRegistry;
 
 public class RMIClient {
 
+    private static void menuEditar(){
+
+        try {
+            RMIServerInterface server = (RMIServerInterface) LocateRegistry.getRegistry(7000).lookup("servidor");
+
+            int n;
+
+            do {
+
+                System.out.println("");
+                System.out.println("1. Editar Artista");
+                System.out.println("2. Editar Album");
+                System.out.println("3. Editar Cancion");
+                System.out.println("4. Volver");
+
+                Scanner sc = new Scanner(System.in);
+                System.out.print("Introduzca un número: ");
+                n = sc.nextInt();
+
+                switch (n) {
+                    case 1:
+                        menuCrearArtista(server);
+                        break;
+                    case 2:
+                        break;
+                    case 3:
+                        break;
+                    default:
+                        break;
+                }
+            } while (n != 4);
+        } catch (NotBoundException e) {
+        e.printStackTrace();
+    } catch (RemoteException e) {
+        e.printStackTrace();
+    }
+
+    }
 
     private static void menuCrearArtista(RMIServerInterface server){
 
@@ -78,8 +116,8 @@ public class RMIClient {
         try {
             RMIServerInterface server = (RMIServerInterface) LocateRegistry.getRegistry(7000).lookup("servidor");
             System.out.println(server.sayHello());
-            Artista a = server.obtenerArtista("pedro");
-            a.mostrar();
+           // Artista a = server.obtenerArtista("pedro");
+            //a.mostrar();
             int n;
             do{
                 System.out.println("");
@@ -132,11 +170,62 @@ public class RMIClient {
                     System.out.println(r);
                     if(r){
                         System.out.println("Te has logueado.");
-                        menuCrearArtista(server);
                     }
                 }while(r == false);
             }else{
                 System.exit(0);
+            }
+
+
+            if(r){
+                do {
+
+                    System.out.println("");
+                    System.out.println("1. Editar Artista Album o Cancion(Editor)");
+                    System.out.println("2. Ver Musica Artista o Album");
+                    System.out.println("3. Consulta detalles de Album o Artista");
+                    System.out.println("4. Escribe una critica de un Album");
+                    System.out.println("5. Dar privilegios de editor(Editor)");
+                    System.out.println("6. Subir musica");
+                    System.out.println("7. Compartir musica");
+                    System.out.println("8. Bajar musica");
+                    System.out.println("9. Salir ");
+
+                    Scanner sc = new Scanner(System.in);
+                    System.out.print("Introduzca un número: ");
+                    n = sc.nextInt();
+
+                    switch(n){
+                        case 1:
+                            menuEditar();
+                            break;
+                        case 2:
+                            break;
+                        case 3:
+                            break;
+                        case 4:
+                            break;
+                        case 55:
+                            break;
+                        case 6:
+                            break;
+                        case 7:
+                            break;
+                        case 8:
+                            break;
+                        default:
+                            break;
+
+                    }
+
+
+
+                }while (n!=9);
+
+
+
+
+
             }
 
         } catch (NotBoundException e) {
