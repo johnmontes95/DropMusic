@@ -50,7 +50,7 @@ public class MulticastServer extends Thread{
                     System.out.println("Estás en el login");
                     String usu = mapa.get("username");
                     String pass = mapa.get("password");
-                    String mensaje = null;
+
                     Connection con = null;
                     try {
                         con = DriverManager.getConnection(Config.URL, Config.USERDB, Config.PASSDB);
@@ -63,6 +63,7 @@ public class MulticastServer extends Thread{
                         ps.setString(2, pass);
 
                         ResultSet rs = ps.executeQuery();
+                        String mensaje = null;
                         if(rs.next()){
                             mensaje = "type | status; logueado | on";
                         }else{
@@ -100,11 +101,9 @@ public class MulticastServer extends Thread{
                     String nombre = mapa.get("nombre");
                     String apellidos = mapa.get("apellido");
                     Connection con1 = null;
-                    String mensaje1 = null;
                     int n = 0;
                     try {
                         con1 = DriverManager.getConnection(Config.URL, Config.USERDB, Config.PASSDB);
-                        con1.setAutoCommit(false);
                         String sql3 = "insert into persona values(?, ?, ?, ?, ?)";
                         String sql4 = "select count(*) as cuenta from persona";
                         Statement s = con1.createStatement();
@@ -127,7 +126,7 @@ public class MulticastServer extends Thread{
 
 
                         int i = ps1.executeUpdate();
-
+                        String mensaje1 = null;
                         if(i == 1){
                             mensaje1 = "type | registro; registrado |" + " true";
                            System.out.println("Usuario creado");
@@ -144,23 +143,104 @@ public class MulticastServer extends Thread{
 
                         ps1.close();
                         rs1.close();
-                        con1.commit();
+                        s.close();
                     } catch (SQLException e) {
-
-                        try {
-                            if(con1 != null) {
-                                con1.rollback();
-                            }
-                        } catch (SQLException e1) {
-                                e1.printStackTrace();
-                        }
-
-
                         e.printStackTrace();
                     }finally{
                         try {
                             if(con1 != null) {
                                 con1.close();
+                            }
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    break;
+
+                case "a_artist":
+                    System.out.println("Añadir artista");
+
+                    String nom = mapa.get("nombre");
+                    String genero = mapa.get("genero");
+                    Connection con2 = null;
+
+
+                    try {
+                        con2 = DriverManager.getConnection(Config.URL, Config.USERDB, Config.PASSDB);
+
+                        String sql = "insert into artista values(?, ?)";
+
+                        PreparedStatement ps = con2.prepareStatement(sql);
+
+                        ps.setString(1, nom);
+                        ps.setString(2, genero);
+
+                        int i = ps.executeUpdate();
+                        String mensaje = null;
+                        if(i == 1){
+                            mensaje = "type | ca_artist; creado |" + " true";
+
+                        }else{
+                            mensaje = "type | ca_artist; creado |" + " false";
+
+                        }
+
+                        try {
+                            sendUDPMessage(mensaje);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        ps.close();
+
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }finally{
+                        try {
+                            if(con2 != null) {
+                                con2.close();
+                            }
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    break;
+                case "e_artist":
+                    System.out.println("Eliminar artista");
+                    String nomb = mapa.get("nombre");
+                    Connection con3 = null;
+                    try {
+                        con3 = DriverManager.getConnection(Config.URL, Config.USERDB, Config.PASSDB);
+
+                        String sql = "delete from artista where nombre = ?";
+
+                        PreparedStatement ps = con3.prepareStatement(sql);
+
+                        ps.setString(1, nomb);
+
+                        int i = ps.executeUpdate();
+                        String mensaje = null;
+                        if(i == 1){
+                            mensaje = "type | ea_artist; eliminado |" + " true";
+
+                        }else{
+                            mensaje = "type | ea_artist; eliminado |" + " false";
+                        }
+
+                        try {
+                            sendUDPMessage(mensaje);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        ps.close();
+
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }finally{
+                        try {
+                            if(con3 != null) {
+                                con3.close();
                             }
                         } catch (SQLException e) {
                             e.printStackTrace();

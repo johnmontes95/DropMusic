@@ -7,9 +7,72 @@ import java.rmi.registry.LocateRegistry;
 public class RMIClient {
 
 
-    public void menuCrearArtista(String usuario){
-        System.out.println("1. ");
+    private static void menuCrearArtista(RMIServerInterface server){
+
+        int n;
+        do {
+            System.out.println("1. Añadir artista");
+            System.out.println("2. Editar artista");
+            System.out.println("3. Eliminar artista");
+            System.out.println("4. Volver");
+            System.out.println("Selecciona una opción: ");
+            Scanner sc = new Scanner(System.in);
+            n = sc.nextInt();
+        }while(n < 0 || n > 4);
+
+        switch (n){
+            case 1:
+                System.out.println("Vas a añadir un nuevo artista");
+                Scanner sc = new Scanner(System.in);
+                System.out.print("Introduce el nombre del artista: ");
+                String a = sc.nextLine();
+                Scanner sc1 = new Scanner(System.in);
+                System.out.print("Introduce el genero de la musica del artista: ");
+                String g = sc1.nextLine();
+                //Artista ar = new Artista(a, g);
+                try {
+                    boolean r = server.anadirArtista(a, g);
+
+                    if(r){
+                        System.out.println("El artista ha sido añadido correctamente.");
+                    }
+                } catch (RemoteException e) {
+                    System.out.println("No se pudo añadir el artista.");
+                    e.printStackTrace();
+                }
+                menuCrearArtista(server);
+                break;
+            case 2:
+
+                break;
+            case 3:
+                System.out.println("Eliminar un artista");
+                Scanner sc2 = new Scanner(System.in);
+                System.out.print("Introduce el nombre del artista que deseas eliminar: ");
+                String a1 = sc2.nextLine();
+
+                try {
+                    boolean r = server.eliminarArtista(a1);
+                    if(r){
+                        System.out.println("Artista eliminado.");
+                    }
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case 4:
+                break;
+        }
+
     }
+
+    public void menuGestion(){
+        System.out.println("1. Registrarse");
+        System.out.println("2. Autenticarse");
+        System.out.println("3. Salir");
+    }
+
+
 
     public static void main(String args[]) {
         try {
@@ -67,6 +130,7 @@ public class RMIClient {
                     System.out.println(r);
                     if(r){
                         System.out.println("Te has logueado.");
+                        menuCrearArtista(server);
                     }
                 }while(r == false);
             }else{
