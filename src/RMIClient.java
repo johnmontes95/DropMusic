@@ -73,6 +73,8 @@ public class RMIClient {
 
                     if(r){
                         System.out.println("El artista ha sido añadido correctamente.");
+                    }else{
+                        System.out.println("Ya existe un artista con ese nombre");
                     }
                 } catch (RemoteException e) {
                     System.out.println("No se pudo añadir el artista.");
@@ -81,16 +83,43 @@ public class RMIClient {
                 menuCrearArtista(server);
                 break;
             case 2:
-
-                break;
-            case 3:
-                System.out.println("Eliminar un artista");
+                System.out.println("Editar un artista");
                 Scanner sc2 = new Scanner(System.in);
-                System.out.print("Introduce el nombre del artista que deseas eliminar: ");
+                System.out.print("Introduce el nombre del artista que deseas editar: ");
                 String a1 = sc2.nextLine();
+                System.out.print("Introduce el nombre del artista que deseas editar: ");
+                String a11 = sc2.nextLine();
+                System.out.print("Introduce el nuevo genero del artista: ");
+                String a111 = sc2.nextLine();
+
+
+
 
                 try {
-                    boolean r = server.eliminarArtista(a1);
+
+                    boolean r = server.editarArtista(a1,a11,a111);
+                    if(r){
+                        System.out.println("Se han modificado los datos");
+                    }else{
+                        System.out.println("No existe ese artista o el nuevo nombre ya existe");
+                    }
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+                menuCrearArtista(server);
+                break;
+
+
+
+
+            case 3:
+                System.out.println("Eliminar un artista");
+                Scanner sc3 = new Scanner(System.in);
+                System.out.print("Introduce el nombre del artista que deseas eliminar: ");
+                String a2 = sc3.nextLine();
+
+                try {
+                    boolean r = server.eliminarArtista(a2);
                     if(r){
                         System.out.println("Artista eliminado.");
                     }

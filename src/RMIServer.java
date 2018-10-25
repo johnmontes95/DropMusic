@@ -87,9 +87,12 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         String datos = "type | a_artist; nombre | " + nombre + "; genero | " + genero + "\n";
 
         try {
-            sendUDPMessage(datos);
-            String msg = (String) mensajeUDP(receiveUDPMessage().replaceAll(" ", "").trim());
-            r = msg.equals("true");
+
+            if(!existeArtista(nombre)) {
+                sendUDPMessage(datos);
+                String msg = (String) mensajeUDP(receiveUDPMessage().replaceAll(" ", "").trim());
+                r = msg.equals("true");
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -97,8 +100,23 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
     }
 
     @Override
-    public boolean editarArtista(Artista a) throws RemoteException {
-        return false;
+    public boolean editarArtista(String a,String aa,String genero) throws RemoteException {
+        boolean r = false;
+
+        String datos = "type | edit_artist; nombre | " + a + ";nnombre|"+aa+";genero|"+genero+"\n";
+
+        try {
+
+            if(existeArtista(a)) {
+                sendUDPMessage(datos);
+                String msg = (String) mensajeUDP(receiveUDPMessage().replaceAll(" ", "").trim());
+                r = msg.equals("true");
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return r;
     }
 
     public Artista obtenerArtista(String nombre) throws RemoteException{
@@ -210,6 +228,12 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                 break;
             case "ca_album":
                 msg = mapa.get("creado");
+                break;
+            case "ss_artist":
+                msg=mapa.get("existe");
+                break;
+            case "redit_artist":
+                msg=mapa.get("editado");
                 break;
             default:
                 System.out.println("Error");

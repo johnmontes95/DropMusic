@@ -336,6 +336,102 @@ public class MulticastServer extends Thread{
                         }
                     }
                     break;
+
+                case "s_artist":
+                    System.out.println("Comprobacion de artista");
+
+                    String eArtista = mapa.get("nombre");
+                    Connection con6 = null;
+                    try {
+                        con6 = DriverManager.getConnection(Config.URL, Config.USERDB, Config.PASSDB);
+
+                        String sql = "Select * from artista where nombre='"+eArtista+"'";
+                       Statement ps = con6.createStatement();
+                       ResultSet rs= ps.executeQuery(sql);
+
+                        String mensaje = null;
+
+                            rs.next();
+
+                            if (rs.getRow() > 0) {
+
+                                mensaje = "type | ss_artist; existe |" + " true";
+                            } else {
+                                mensaje = "type | ss_artist; existe |" + " false";
+                            }
+
+
+                        try {
+                            sendUDPMessage(mensaje);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        ps.close();
+                        rs.close();
+
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }finally{
+                        try {
+                            if(con6 != null) {
+                                con6.close();
+                            }
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+
+                    break;
+
+                case "edit_artist":
+                    System.out.println("Editar artista");
+                    String  editArtista= mapa.get("nombre");
+                    String editNartista=mapa.get("nnombre");
+                    String editGenero=mapa.get("genero");
+
+
+                    Connection con7 = null;
+                    try {
+                        con7 = DriverManager.getConnection(Config.URL, Config.USERDB, Config.PASSDB);
+
+
+                        String sql = "UPDATE `artista` SET `Nombre` = '"+editNartista+"', Genero='"+editGenero+"' WHERE `artista`.`Nombre` = '"+editArtista+"'";
+                        PreparedStatement ps = con7.prepareStatement(sql);
+
+                        String mensaje = null;
+                        int i = ps.executeUpdate();
+
+                        if (i>=1) {
+
+                            mensaje = "type | redit_artist;  editado |" + " true";
+                        } else {
+                            mensaje = "type | redit_artist; editado |" + " false";
+                        }
+
+
+                        try {
+                            sendUDPMessage(mensaje);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        ps.close();
+
+
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }finally{
+                        try {
+                            if(con7 != null) {
+                                con7.close();
+                            }
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    break;
                 default:
                     System.out.print("");
             }
