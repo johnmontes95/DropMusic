@@ -1,25 +1,29 @@
+import java.util.List;
+
 public interface RMIServerInterface extends java.rmi.Remote {
-    public String sayHello() throws java.rmi.RemoteException;
+     String sayHello() throws java.rmi.RemoteException;
 
-    public boolean regisUser(String nom, String ape, String user, String pass) throws java.rmi.RemoteException;
+     boolean regisUser(String nom, String ape, String user, String pass) throws java.rmi.RemoteException;
 
-    public boolean login(String user, String pass) throws java.rmi.RemoteException;
+     boolean login(String user, String pass) throws java.rmi.RemoteException;
 
-    public boolean existeArtista(String nombre) throws java.rmi.RemoteException;
+     boolean existeArtista(String nombre) throws java.rmi.RemoteException;
 
-    public Artista obtenerArtista(String nombre) throws java.rmi.RemoteException;
+     Artista obtenerArtista(String nombre) throws java.rmi.RemoteException;
 
-    public boolean anadirArtista(String nombre, String genero) throws java.rmi.RemoteException;
+     boolean anadirArtista(String nombre, String genero) throws java.rmi.RemoteException;
 
-    public boolean editarArtista(Artista a) throws  java.rmi.RemoteException;
+     boolean editarArtista(Artista a) throws  java.rmi.RemoteException;
 
-    public boolean eliminarArtista(String n) throws java.rmi.RemoteException;
+     boolean eliminarArtista(String n) throws java.rmi.RemoteException;
 
-    public boolean anadirAlbum(Album a) throws  java.rmi.RemoteException;
+     boolean anadirAlbum(Album a) throws  java.rmi.RemoteException;
 
-    public boolean editarAlbum(String n, String nn, String d) throws java.rmi.RemoteException;
+     boolean editarAlbum(String n, String nn, String d) throws java.rmi.RemoteException;
 
-    public boolean eliminarAlbum(String n, String a) throws java.rmi.RemoteException;
+     boolean eliminarAlbum(String n, String a) throws java.rmi.RemoteException;
+
+    //List<Album> listaAlbum() throws java.rmi.RemoteException;
 
     //public boolean login(String user, String pass) throws java.rmi.RemoteException;
 }
