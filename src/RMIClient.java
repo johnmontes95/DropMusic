@@ -78,6 +78,8 @@ public class RMIClient {
         try {
             RMIServerInterface server = (RMIServerInterface) LocateRegistry.getRegistry(7000).lookup("servidor");
             System.out.println(server.sayHello());
+            Artista a = server.obtenerArtista("pedro");
+            a.mostrar();
             int n;
             do{
                 System.out.println("");

@@ -247,6 +247,95 @@ public class MulticastServer extends Thread{
                         }
                     }
                     break;
+
+                case "oa_artist":
+                    System.out.println("Obtener datos artista");
+                    String nombrea = mapa.get("nombre");
+                    Connection con4 = null;
+                    try {
+                        con4 = DriverManager.getConnection(Config.URL, Config.USERDB, Config.PASSDB);
+
+                        String sql = "select * from artista where nombre = ?";
+
+                        PreparedStatement ps = con4.prepareStatement(sql);
+
+                        ps.setString(1, nombrea);
+
+                        ResultSet rs = ps.executeQuery();
+                        String mensaje = null;
+                        if(rs.next()){
+                            mensaje = "type | da_artist; nombre |" + rs.getString(1) + "; genero |" + rs.getString(2);
+                        }
+
+                        try {
+                            sendUDPMessage(mensaje);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        ps.close();
+                        rs.close();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }finally{
+                        try {
+                            if(con4 != null) {
+                                con4.close();
+                            }
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    break;
+
+                case "a_album":
+                    System.out.println("Añadir artista");
+
+                    String nomal = mapa.get("nombre");
+                    String artista = mapa.get("artista");
+                    String d = mapa.get("descripcion");
+                    Connection con5 = null;
+
+
+                    try {
+                        con5 = DriverManager.getConnection(Config.URL, Config.USERDB, Config.PASSDB);
+
+                        String sql = "insert into album values(?, ?, ?)";
+
+                        PreparedStatement ps = con5.prepareStatement(sql);
+
+                        ps.setString(1, nomal);
+                        ps.setString(2, artista);
+                        ps.setString(3, d);
+
+                        int i = ps.executeUpdate();
+                        String mensaje = null;
+                        if(i == 1){
+                            mensaje = "type | ca_album; creado |" + " true";
+                        }else{
+                            mensaje = "type | ca_album; creado |" + " false";
+                        }
+
+                        try {
+                            sendUDPMessage(mensaje);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        ps.close();
+
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }finally{
+                        try {
+                            if(con5 != null) {
+                                con5.close();
+                            }
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    break;
                 default:
                     System.out.print("");
             }
