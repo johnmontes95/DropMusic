@@ -4,13 +4,13 @@ import java.util.Scanner;
 
 public class Album implements Serializable {
     private String nombre;
-    private String a;
+    private Artista a;
     private String descripcion;
     private List<Cancion> canciones;
     private List<Critica> criticas;
     private int numCanciones;
 
-    public Album(String nombre, String a, String descripcion) {
+    public Album(String nombre, Artista a, String descripcion) {
         this.nombre = nombre;
         this.a = a;
         this.descripcion = descripcion;
@@ -25,11 +25,11 @@ public class Album implements Serializable {
         this.nombre = nombre;
     }
 
-    public String getA() {
+    public Artista getA() {
         return a;
     }
 
-    public void setA(String a) {
+    public void setA(Artista a) {
         this.a = a;
     }
 
