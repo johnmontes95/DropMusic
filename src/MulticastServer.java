@@ -128,10 +128,10 @@ public class MulticastServer extends Thread{
                         int i = ps1.executeUpdate();
                         String mensaje1 = null;
                         if(i == 1){
-                            mensaje1 = "type|registro;registrado|" + " true";
+                            mensaje1 = "type|registro;registrado|" + "true";
                            System.out.println("Usuario creado");
                         }else{
-                            mensaje1 = "type|registro;registrado|" + " false";
+                            mensaje1 = "type|registro;registrado|" + "false";
                             System.out.println("Usuario no creado");
                         }
 
@@ -178,10 +178,10 @@ public class MulticastServer extends Thread{
                         int i = ps.executeUpdate();
                         String mensaje = null;
                         if(i == 1){
-                            mensaje = "type|ca_artist;creado|" + " true";
+                            mensaje = "type|ca_artist;creado|" + "true";
 
                         }else{
-                            mensaje = "type|ca_artist;creado|" + " false";
+                            mensaje = "type|ca_artist;creado|" + "false";
 
                         }
 
@@ -221,10 +221,10 @@ public class MulticastServer extends Thread{
                         int i = ps.executeUpdate();
                         String mensaje = null;
                         if(i == 1){
-                            mensaje = "type|ea_artist;eliminado|" + " true";
+                            mensaje = "type|ea_artist;eliminado|" + "true";
 
                         }else{
-                            mensaje = "type|ea_artist;eliminado|" + " false";
+                            mensaje = "type|ea_artist;eliminado|" + "false";
                         }
 
                         try {
@@ -311,9 +311,9 @@ public class MulticastServer extends Thread{
                         int i = ps.executeUpdate();
                         String mensaje = null;
                         if(i == 1){
-                            mensaje = "type|ca_album;creado|" + " true";
+                            mensaje = "type|ca_album;creado|" + "true";
                         }else{
-                            mensaje = "type|ca_album;creado|" + " false";
+                            mensaje = "type|ca_album;creado|" + "false";
                         }
 
                         try {
@@ -355,9 +355,9 @@ public class MulticastServer extends Thread{
 
                             if (rs.getRow() > 0) {
 
-                                mensaje = "type|ss_artist;existe|" + " true";
+                                mensaje = "type|ss_artist;existe|" + "true";
                             } else {
-                                mensaje = "type|ss_artist;existe|" + " false";
+                                mensaje = "type|ss_artist;existe|" + "false";
                             }
 
 
@@ -405,9 +405,9 @@ public class MulticastServer extends Thread{
 
                         if (i>=1) {
 
-                            mensaje = "type|redit_artist; editado|" + " true";
+                            mensaje = "type|redit_artist;editado|" + "true";
                         } else {
-                            mensaje = "type|redit_artist;editado|" + " false";
+                            mensaje = "type|redit_artist;editado|" + "false";
                         }
 
 
@@ -452,9 +452,9 @@ public class MulticastServer extends Thread{
 
                         if (rs.getRow() > 0) {
 
-                            mensaje = "type|rexiste_album;existe|" + " true";
+                            mensaje = "type|rexiste_album;existe|" + "true";
                         } else {
-                            mensaje = "type|rexiste_album;existe|" + " false";
+                            mensaje = "type|rexiste_album;existe|" + "false";
                         }
 
 
