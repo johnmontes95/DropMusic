@@ -6,8 +6,12 @@ public class Artista implements Serializable {
     private String genero;
 
     public Artista(String n, String g){
+
         this.nombre = n;
         this.genero = g;
+    }
+    public Artista(){
+
     }
 
     public String getNombre() {

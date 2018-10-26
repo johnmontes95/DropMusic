@@ -41,8 +41,10 @@ public class RMIClient implements RMIClientInterface, Serializable {
                         menuCrearArtista(server);
                         break;
                     case 2:
+                        menuCrearAlbum(server);
                         break;
                     case 3:
+                        menuCrearCancion(server);
                         break;
                     default:
                         break;
@@ -84,6 +86,8 @@ public class RMIClient implements RMIClientInterface, Serializable {
 
                     if(r){
                         System.out.println("El artista ha sido añadido correctamente.");
+                    }else{
+                        System.out.println("Ya existe un artista con ese nombre");
                     }
                 } catch (RemoteException e) {
                     System.out.println("No se pudo añadir el artista.");
@@ -92,18 +96,47 @@ public class RMIClient implements RMIClientInterface, Serializable {
                 menuCrearArtista(server);
                 break;
             case 2:
-
-                break;
-            case 3:
-                System.out.println("Eliminar un artista");
+                System.out.println("Editar un artista");
                 Scanner sc2 = new Scanner(System.in);
-                System.out.print("Introduce el nombre del artista que deseas eliminar: ");
+                System.out.print("Introduce el nombre del artista que deseas editar: ");
                 String a1 = sc2.nextLine();
+                System.out.print("Introduce el nombre del artista que deseas editar: ");
+                String a11 = sc2.nextLine();
+                System.out.print("Introduce el nuevo genero del artista: ");
+                String a111 = sc2.nextLine();
+
+
+
 
                 try {
-                    boolean r = server.eliminarArtista(a1);
+
+                    boolean r = server.editarArtista(a1,a11,a111);
+                    if(r){
+                        System.out.println("Se han modificado los datos");
+                    }else{
+                        System.out.println("No existe ese artista o el nuevo nombre ya existe");
+                    }
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+                menuCrearArtista(server);
+                break;
+
+
+
+
+            case 3:
+                System.out.println("Eliminar un artista");
+                Scanner sc3 = new Scanner(System.in);
+                System.out.print("Introduce el nombre del artista que deseas eliminar: ");
+                String a2 = sc3.nextLine();
+
+                try {
+                    boolean r = server.eliminarArtista(a2);
                     if(r){
                         System.out.println("Artista eliminado.");
+                    }else{
+                        System.out.println("No existe ese artista");
                     }
                 } catch (RemoteException e) {
                     e.printStackTrace();
@@ -115,14 +148,287 @@ public class RMIClient implements RMIClientInterface, Serializable {
 
     }
 
-    public void menuGestion(){
+
+   private static void menuCrearAlbum(RMIServerInterface server){
+
+       int n;
+       Scanner sc = new Scanner(System.in);
+       String titulo;
+       String nombArtista;
+       String descripcion;
+
+       do {
+           System.out.println("1. Añadir Album");
+           System.out.println("2. Editar Album");
+           System.out.println("3. Eliminar Album");
+           System.out.println("4. Volver");
+           System.out.println("Selecciona una opción: ");
+           n = sc.nextInt();
+       }while(n < 0 || n > 4);
+
+
+       switch (n){
+           case 1:
+
+               System.out.println("Vas a añadir un nuevo album");
+                sc.nextLine();
+               System.out.print("Introduce el titulo del album: ");
+               titulo = sc.nextLine();
+               System.out.print("Introduce el nombre del artista: ");
+               nombArtista = sc.nextLine();
+               System.out.print("Introduce una descripccion del album: ");
+               descripcion = sc.nextLine();
+
+               Artista artista=new Artista();
+               artista.setNombre(nombArtista);
+               Album album = new Album(titulo,artista,descripcion);
+
+
+
+
+               try {
+                   boolean r = server.anadirAlbum(album);
+
+                   if(r){
+                       System.out.println("El album ha sido añadido correctamente.");
+                   }else{
+                       System.out.println("Ya existe un album con ese nombre");
+                   }
+               } catch (RemoteException e) {
+                   System.out.println("No se pudo añadir el album.");
+                   e.printStackTrace();
+               }
+               menuCrearAlbum(server);
+               break;
+           case 2:
+               System.out.println("Vas a editar un album");
+               sc.nextLine();
+               System.out.print("Introduce el titulo del album: ");
+               titulo = sc.nextLine();
+               System.out.print("Introduce el nuevo titulo del album: ");
+               String tituloN = sc.nextLine();
+               System.out.print("Introduce el nombre del artista: ");
+                nombArtista = sc.nextLine();
+               System.out.print("Introduce el nuevo nombre del artista: ");
+               String nombArtistaN = sc.nextLine();
+               System.out.print("Introduce la nueva descripccion del album: ");
+               String descripcionN = sc.nextLine();
+
+               Artista artista1=new Artista();
+               artista1.setNombre(nombArtista);
+               Album album1 = new Album(titulo,artista1);
+
+               Artista artistaN=new Artista();
+               artistaN.setNombre(nombArtistaN);
+               Album albumN = new Album(tituloN,artistaN,descripcionN);
+
+               try {
+                   boolean r = server.editarAlbum(album1,albumN);
+
+                   if(r){
+                       System.out.println("El album ha sido editado correctamente.");
+                   }else{
+                       System.out.println("No ha sido editado el album");
+                   }
+               } catch (RemoteException e) {
+                   System.out.println("No se pudo editar el album.");
+                   e.printStackTrace();
+               }
+               menuCrearAlbum(server);
+               break;
+
+           case 3:
+               System.out.println("Vas a eliminar un album");
+               sc.nextLine();
+               System.out.print("Introduce el titulo del album: ");
+               titulo = sc.nextLine();
+               System.out.print("Introduce el nombre del artista: ");
+               nombArtista = sc.nextLine();
+
+               try {
+                   boolean r = server.eliminarAlbum(titulo,nombArtista);
+
+                   if(r){
+                       System.out.println("El album ha sido eliminado correctamente.");
+                   }else{
+                       System.out.println("No ha sido eliminado el album");
+                   }
+               } catch (RemoteException e) {
+                   System.out.println("Error No se pudo eliminar el album.");
+                   e.printStackTrace();
+               }
+               menuCrearAlbum(server);
+               break;
+
+
+
+
+           case 4:
+               break;
+       }
+
+   }
+
+   private static void menuCrearCancion(RMIServerInterface server){
+
+       int n;
+       Scanner sc = new Scanner(System.in);
+       String titulo;
+       String nombArtista;
+       String nombAlbum;
+       int duracion;
+       Cancion cancion=new Cancion();
+       Album album = new Album();
+       Artista artista=new Artista();
+
+       do {
+           System.out.println("1. Añadir Cancion");
+           System.out.println("2. Editar Cancion");
+           System.out.println("3. Eliminar Cancion");
+           System.out.println("4. Volver");
+           System.out.println("Selecciona una opción: ");
+           n = sc.nextInt();
+       }while(n < 0 || n > 4);
+
+
+       switch (n){
+
+           case 1:
+               System.out.println("Vas a añadir una nueva cancion");
+               sc.nextLine();
+               System.out.print("Introduce el titulo de la cancion: ");
+               titulo = sc.nextLine();
+               System.out.print("Introduce la duracion de la cancion en segundos: ");
+               duracion = sc.nextInt();
+               sc.nextLine();
+               System.out.print("Introduce el nombre del artista: ");
+               nombArtista = sc.nextLine();
+               System.out.print("Introduce el nombre del album: ");
+               nombAlbum = sc.nextLine();
+
+               artista.setNombre(nombArtista);
+               album.setA(artista);
+               album.setNombre(nombAlbum);
+               cancion.setAl(album);
+               cancion.setDuracion(duracion);
+               cancion.setTitulo(titulo);
+
+
+
+
+               try {
+                   boolean r = server.anadirCancion(cancion);
+
+                   if(r){
+                       System.out.println("La cancion ha sido añadido correctamente.");
+                   }else{
+                       System.out.println("Ya existe una cancion con ese nombre");
+                   }
+               } catch (RemoteException e) {
+                   System.out.println("No se pudo añadir el album.");
+                   e.printStackTrace();
+               }
+               menuCrearCancion(server);
+               break;
+
+
+           case 2:
+               System.out.println("Vas a editar una cancion");
+               sc.nextLine();
+               System.out.print("Introduce el titulo de la cancion: ");
+               titulo = sc.nextLine();
+               System.out.print("Introduce el nuevo titulo de la cancion: ");
+               String tituloN = sc.nextLine();
+               System.out.print("Introduce el nombre del artista: ");
+               nombArtista = sc.nextLine();
+               System.out.print("Introduce el nuevo nombre del artista: ");
+               String nombArtistaN = sc.nextLine();
+               System.out.print("Introduce el nombre del album: ");
+               nombAlbum = sc.nextLine();
+               System.out.print("Introduce el nuevo nombre del album: ");
+               String nombAlbumN = sc.nextLine();
+               System.out.print("Introduce la nueva duraccion de la cancion: ");
+               duracion = sc.nextInt();
+
+
+
+               artista.setNombre(nombArtista);
+               album.setA(artista);
+               album.setNombre(nombAlbum);
+               cancion.setTitulo(titulo);
+               cancion.setAl(album);
+
+               Artista artistaN=new Artista();
+               artistaN.setNombre(nombArtistaN);
+               Album albumN = new Album(nombAlbumN,artistaN);
+               Cancion cancionN= new Cancion();
+               cancionN.setAl(albumN);
+               cancionN.setDuracion(duracion);
+               cancionN.setTitulo(tituloN);
+
+               try {
+                   boolean r = server.editarCancion(cancion,cancionN);
+
+                   if(r){
+                       System.out.println("La cancion ha sido editado correctamente.");
+                   }else{
+                       System.out.println("No ha sido editada la cancion");
+                   }
+               } catch (RemoteException e) {
+                   System.out.println("No se pudo editar la cancion.");
+                   e.printStackTrace();
+               }
+               menuCrearCancion(server);
+
+               break;
+           case 3:
+               System.out.println("Vas a eliminar una cancion");
+               sc.nextLine();
+               System.out.print("Introduce el titulo de la cancion: ");
+               titulo = sc.nextLine();
+               System.out.print("Introduce el nombre del artista: ");
+               nombArtista = sc.nextLine();
+               System.out.print("Introduce el nombre del album: ");
+               nombAlbum = sc.nextLine();
+
+
+               artista.setNombre(nombArtista);
+               album.setA(artista);
+               album.setNombre(nombAlbum);
+               cancion.setTitulo(titulo);
+               cancion.setAl(album);
+
+               try {
+                   boolean r = server.eliminarCancion(cancion);
+
+                   if(r){
+                       System.out.println("La cancion ha sido eliminada correctamente.");
+                   }else{
+                       System.out.println("No ha sido eliminada la cancion");
+                   }
+               } catch (RemoteException e) {
+                   System.out.println("Error No se pudo eliminar la cancion.");
+                   e.printStackTrace();
+               }
+               menuCrearCancion(server);
+               break;
+           default:
+               break;
+
+
+
+       }
+
+
+
+   }
+
+
+   public void menuGestion(){
         System.out.println("1. Registrarse");
         System.out.println("2. Autenticarse");
         System.out.println("3. Salir");
     }
-
-
-
     public static void main(String args[]) {
         try {
             RMIServerInterface server = (RMIServerInterface) LocateRegistry.getRegistry(7000).lookup("servidor");

@@ -55,7 +55,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
     @Override
     public boolean regisUser(String nom, String ape, String user, String pass) throws RemoteException {
-        String datos = "type | register; nombre | " + nom + "; apellido | " + ape + "; username | " + user + "; password | " + pass + "\n";
+        String datos = "type|register;nombre|" + nom + ";apellido|" + ape + ";username|" + user + ";password|" + pass + "\n";
         try {
             sendUDPMessage(datos);
         } catch (IOException e) {
@@ -65,7 +65,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
     }
 
 /*    public Persona getPersona(String nomUsu) throws RemoteException {
-        String datos = "type | g_persona; nombre | " + nomUsu + "\n";
+        String datos = "type|g_persona;nombre|" + nomUsu + "\n";
         try {
             sendUDPMessage(datos);
         } catch (IOException e) {
@@ -77,10 +77,10 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
     @Override
     public boolean login(String user, String pass) throws RemoteException {
         boolean r = false;
-        String datos = "type | login; username | " + user + "; password | " + pass + "\n";
+        String datos = "type|login;username|" + user + ";password|" + pass + "\n";
         try {
             sendUDPMessage(datos);
-            String msg = (String) mensajeUDP(receiveUDPMessage().replaceAll(" ", "").trim());
+            String msg = (String) mensajeUDP(receiveUDPMessage().trim());
 
             if(msg.equals("on")){
                 r = true;
@@ -96,11 +96,11 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
     @Override
     public boolean existeArtista(String nombre) throws RemoteException {
         boolean r = false;
-        String datos = "type | s_artist; nombre | " + nombre + "\n";
+        String datos = "type|s_artist;nombre|" + nombre + "\n";
 
         try {
             sendUDPMessage(datos);
-            String msg = (String) mensajeUDP(receiveUDPMessage().replaceAll(" ", "").trim());
+            String msg = (String) mensajeUDP(receiveUDPMessage().trim());
             r = msg.equals("true");
         } catch (IOException e) {
             e.printStackTrace();
@@ -111,12 +111,15 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
     @Override
     public boolean anadirArtista(String nombre, String genero) throws RemoteException {
         boolean r = false;
-        String datos = "type | a_artist; nombre | " + nombre + "; genero | " + genero + "\n";
+        String datos = "type|a_artist;nombre|" + nombre + ";genero|" + genero + "\n";
 
         try {
-            sendUDPMessage(datos);
-            String msg = (String) mensajeUDP(receiveUDPMessage().replaceAll(" ", "").trim());
-            r = msg.equals("true");
+
+            if(!existeArtista(nombre)) {
+                sendUDPMessage(datos);
+                String msg = (String) mensajeUDP(receiveUDPMessage().trim());
+                r = msg.equals("true");
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -124,17 +127,33 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
     }
 
     @Override
-    public boolean editarArtista(Artista a) throws RemoteException {
-        return false;
+    public boolean editarArtista(String a,String aa,String genero) throws RemoteException {
+        boolean r = false;
+
+        String datos = "type|edit_artist;nombre|" + a + ";nnombre|"+aa+";genero|"+genero+"\n";
+
+        try {
+
+            if(existeArtista(a)) {
+                sendUDPMessage(datos);
+                String msg = (String) mensajeUDP(receiveUDPMessage().trim());
+                r = msg.equals("true");
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return r;
     }
 
     public Artista obtenerArtista(String nombre) throws RemoteException{
-        String datos = "type | oa_artist; nombre | " + nombre + "\n";
+        String datos = "type|oa_artist;nombre|" + nombre + "\n";
         Artista a = null;
         try {
-            sendUDPMessage(datos);
-             a = (Artista) mensajeUDP(receiveUDPMessage().replaceAll(" ", "").trim());
-
+            if(existeArtista(nombre)) {
+                sendUDPMessage(datos);
+                a = (Artista) mensajeUDP(receiveUDPMessage().trim());
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -145,28 +164,69 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
     public boolean eliminarArtista(String n) throws RemoteException {
         boolean r = false;
 
-        String datos = "type | e_artist; nombre | " + n + "\n";
+        String datos = "type|e_artist;nombre|" + n + "\n";
 
         try {
-            sendUDPMessage(datos);
-            String msg = (String) mensajeUDP(receiveUDPMessage().replaceAll(" ", "").trim());
-            r = msg.equals("true");
+            if(existeArtista(n)) {
+                sendUDPMessage(datos);
+                String msg = (String) mensajeUDP(receiveUDPMessage().trim());
+                r = msg.equals("true");
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
         return r;
     }
 
+    @Override
+    public boolean estaAlbum(String al,String ar) throws RemoteException{
+
+        boolean r = false;
+
+        String datos = "type|existe_album;nombre|" + al+";artista|"+ar + "\n";
+
+        try {
+
+                sendUDPMessage(datos);
+                String msg = (String) mensajeUDP(receiveUDPMessage().trim());
+                r = msg.equals("true");
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return r;
+
+
+
+    }
     @Override
     public boolean anadirAlbum(Album a) throws RemoteException {
         boolean r = false;
 
-        String datos = "type | a_album; nombre | " + a.getNombre() + "; artista | " + a.getA().getNombre() + "; descripcion |"  + a.getDescripcion() + "\n";
+        String datos = "type|a_album;nombre|" + a.getNombre() + ";artista|" + a.getA().getNombre() + ";descripcion|"  + a.getDescripcion() + "\n";
 
         try {
-            sendUDPMessage(datos);
-            String msg = (String) mensajeUDP(receiveUDPMessage().replaceAll(" ", "").trim());
-            r = msg.equals("true");
+            if(existeArtista(a.getA().getNombre())) {
+                if (estaAlbum(a.getNombre(), a.getA().getNombre())) {
+
+                    System.out.println("Ya existe ese album");
+                }else {
+
+                    sendUDPMessage(datos);
+                    String msg = (String) mensajeUDP(receiveUDPMessage().trim());
+                    r = msg.equals("true");
+                }
+
+            }else{
+
+                anadirArtista(a.getA().getNombre(),"desconocido");
+                sendUDPMessage(datos);
+                String msg = (String) mensajeUDP(receiveUDPMessage().trim());
+                r = msg.equals("true");
+
+            }
+
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -174,14 +234,188 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
     }
 
     @Override
-    public boolean editarAlbum(String n, String nn, String d) throws RemoteException {
-        return false;
+    public boolean editarAlbum(Album a,Album n) throws RemoteException {
+
+        boolean r=false;
+        String datos = "type|edit_album;nombre|" + a.getNombre() + ";artista|" + a.getA().getNombre()  +";nombreN|" + n.getNombre() + ";artistaN|" + n.getA().getNombre() + ";descripcionN|"  + n.getDescripcion() + "\n";
+
+        try {
+
+            // Si no existe ese Album no hace nada, si existe y existe un album con los nuevos datos de album borra ese album y actualiza el original.
+            if (estaAlbum(a.getNombre(), a.getA().getNombre())) {
+
+                if (estaAlbum(n.getNombre(), n.getA().getNombre())) {
+                    //Habria quie eliminar uno de los dos  registros
+
+
+                }else{
+                    //Se conmprueba si existe el nuevo artista y si no se crea
+
+                    if (existeArtista(n.getA().getNombre())) {
+
+                        //Como existe el artista no se hace nada
+
+
+                    } else {
+                        //Como no existe el nuevo artista se crea
+
+                        anadirArtista(n.getA().getNombre(),"desconocido");
+
+
+                    }
+
+                    //Se edita el album
+                    sendUDPMessage(datos);
+                    String msg = (String) mensajeUDP(receiveUDPMessage().trim());
+                    r = msg.equals("true");
+                }
+            }
+
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return r;
+
+
+
+
     }
 
     @Override
     public boolean eliminarAlbum(String n, String a) throws RemoteException {
-        return false;
+
+        boolean r = false;
+        String datos = "type|delete_album;nombre|" + n + ";artista|" + a +"\n";
+
+        try {
+
+            // Si no existe ese Album no hace nada
+            if (estaAlbum(n, a)) {
+
+                //Se elimina el album
+                sendUDPMessage(datos);
+                String msg = (String) mensajeUDP(receiveUDPMessage().trim());
+                r = msg.equals("true");
+
+                }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return r;
     }
+
+
+    @Override
+    public boolean estaCancion(Cancion c) throws RemoteException{
+
+        boolean r = false;
+        String datos = "type|existe_cancion;titulo|" + c.getTitulo()+";artista|"+c.getAl().getA().getNombre() +";album|"+c.getAl().getNombre()+ "\n";
+
+        try {
+            sendUDPMessage(datos);
+            String msg = (String) mensajeUDP(receiveUDPMessage().trim());
+            r = msg.equals("true");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return r;
+    }
+    public boolean anadirCancion(Cancion c) throws  RemoteException{
+        boolean r = false;
+
+        String datos = "type|a_cancion;nombre|" + c.getTitulo() + ";artista|" + c.getAl().getA().getNombre() + ";album|"  + c.getAl().getNombre() +";duracion|"+c.getDuracion()+ "\n";
+
+        try {
+            //Comprobar si existe la cancion
+            if(estaCancion(c)) {
+                System.out.println("Ya existe esa cancion");
+
+
+            }else{
+                //comprobar si esta el album
+                if (!estaAlbum(c.getAl().getNombre(),c.getAl().getA().getNombre())) {
+                    //Si no esta se crea el album (Este metodo se encarga tambien de crear el artista si no existiese)
+                   // c.getAl().setDescripcion("Desconoccida");
+                    anadirAlbum(c.getAl());
+                }
+
+                //Una vez con la certeza de que no existe esa cancion y si el album y artista se introduce la cancion
+                sendUDPMessage(datos);
+                String msg = (String) mensajeUDP(receiveUDPMessage().trim());
+                r = msg.equals("true");
+            }
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return r;
+    }
+    public boolean editarCancion(Cancion c,Cancion n) throws  RemoteException{
+        boolean r=false;
+        String datos = "type|edit_cancion;nombre|" + c.getTitulo() + ";artista|" + c.getAl().getA().getNombre()  +";album|"+c.getAl().getNombre()+";nombreN|" + n.getTitulo() + ";artistaN|" + n.getAl().getA().getNombre() +";albumN|"+n.getAl().getNombre() +";duracionN|"  + n.getDuracion() + "\n";
+
+        try {
+
+            // Si no existe esa cancion no hace nada
+            if (estaCancion(c)) {
+
+                //Si existe la nueva se elimina el registro antiguo
+                if (estaCancion(n)) {
+                    //Habria quie eliminar uno de los dos  registros
+                    eliminarCancion(c);
+
+                }else{
+                    //Se conmprueba si existe el album nuevo
+
+                    if (estaAlbum(n.getAl().getNombre(),n.getAl().getA().getNombre())) {
+
+                        //Como existe el album no se hace nada
+
+
+                    } else {
+                        //Si no existe se crea
+                        anadirAlbum(n.getAl());
+                    }
+
+                    //Se introduce la cancion
+                    sendUDPMessage(datos);
+                    String msg = (String) mensajeUDP(receiveUDPMessage().trim());
+                    r = msg.equals("true");
+                }
+            }
+
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return r;
+
+    }
+    public boolean eliminarCancion(Cancion c) throws  RemoteException{
+        boolean r = false;
+        String datos = "type|delete_cancion;nombre|" + c.getTitulo() + ";artista|" + c.getAl().getA().getNombre()+";album|"+c.getAl().getNombre() +"\n";
+
+        try {
+
+            // Si no existe esa cancion
+            if (estaCancion(c)) {
+
+                //Se elimina la cancion
+                sendUDPMessage(datos);
+                String msg = (String) mensajeUDP(receiveUDPMessage().trim());
+                r = msg.equals("true");
+
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return r;
+    }
+
 
 
     public String receiveUDPMessage() throws IOException {
@@ -238,7 +472,33 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             case "ca_album":
                 msg = mapa.get("creado");
                 break;
+            case "ss_artist":
+                msg=mapa.get("existe");
+                break;
+            case "redit_artist":
+                msg=mapa.get("editado");
+                break;
+            case "rexiste_album":
+                msg=mapa.get("existe");
+                break;
+            case "redit_album":
+                msg=mapa.get("editado");
+                break;
+            case "rdelete_album":
+                msg=mapa.get("delete");
+            break;
+            case "rexiste_cancion":
+                msg=mapa.get("existe");
+                break;
+            case "ra_cancion":
+                msg=mapa.get("creado");
+                break;
+            case "redit_cancion":
+                msg=mapa.get("editado");
+                break;
             default:
+
+
                 System.out.println("Error");
         }
 
@@ -276,7 +536,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
     public void run() {
         MulticastSocket socket = null;
         try {
-            socket = new MulticastSocket(PORT);  // create socket and bind it
+            socket = new MulticastSocket(PORT); // create socket and bind it
             InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
             socket.joinGroup(group);
             while (true) {
