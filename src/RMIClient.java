@@ -5,7 +5,7 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 
-public class RMIClient implements RMIClientInterface, Serializable {
+public class RMIClient {
 
     private String usuario;
 
@@ -489,7 +489,7 @@ public class RMIClient implements RMIClientInterface, Serializable {
                     if(r){
                         System.out.println("Te has logueado.");
                     }
-                    cliente = new RMIClient(user);
+                    cliente = new RMIClientImp(user);
                     System.out.println(cliente.getUsuario());
                     server.addCliente(cliente);
                 }while(r == false);

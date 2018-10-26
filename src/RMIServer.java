@@ -29,10 +29,15 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
     }
 
     @Override
+    public void eliminarCliente(RMIClientInterface client) throws RemoteException {
+        lista.remove(client);
+    }
+
+    @Override
     public void enviarMensajeACliente(String msg, String cliente) throws RemoteException {
-        /*for(RMIClientInterface c : lista) {
+      /*  for(RMIClientInterface c : lista) {
             if (c.getUsuario().equals(cliente)) {
-                c.mensaje(msg);
+                c.mensaje();
             }
         }*/
     }

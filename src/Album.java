@@ -9,6 +9,10 @@ public class Album implements Serializable {
     private List<Cancion> canciones;
     private List<Critica> criticas;
     private int numCanciones;
+    private int puntuacion;
+
+    public Album() {
+    }
 
     public Album(String nombre, Artista a, String descripcion) {
         this.nombre = nombre;
@@ -16,6 +20,10 @@ public class Album implements Serializable {
         this.descripcion = descripcion;
     }
 
+    public Album(String nombre, Artista a){
+        this.nombre = nombre;
+        this.a = a;
+    }
 
     public String getNombre() {
         return nombre;
