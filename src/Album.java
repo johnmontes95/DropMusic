@@ -14,6 +14,11 @@ public class Album implements Serializable {
         this.a = a;
         this.descripcion = descripcion;
     }
+    public Album(String nombre, Artista a){
+        this.nombre = nombre;
+        this.a = a;
+
+    }
 
     public String getNombre() {
         return nombre;

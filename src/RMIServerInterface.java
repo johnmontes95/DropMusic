@@ -19,7 +19,7 @@ public interface RMIServerInterface extends java.rmi.Remote {
 
     public boolean anadirAlbum(Album a) throws  java.rmi.RemoteException;
 
-    public boolean editarAlbum(String n, String nn, String d) throws java.rmi.RemoteException;
+    public boolean editarAlbum(Album a,Album n) throws java.rmi.RemoteException;
 
     public boolean eliminarAlbum(String n, String a) throws java.rmi.RemoteException;
 

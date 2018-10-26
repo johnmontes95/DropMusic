@@ -140,33 +140,38 @@ public class RMIClient {
    private static void menuCrearAlbum(RMIServerInterface server){
 
        int n;
+       Scanner sc = new Scanner(System.in);
+       String titulo;
+       String nombArtista;
+       String descripcion;
+
        do {
            System.out.println("1. Añadir Album");
            System.out.println("2. Editar Album");
            System.out.println("3. Eliminar Album");
            System.out.println("4. Volver");
            System.out.println("Selecciona una opción: ");
-           Scanner sc = new Scanner(System.in);
            n = sc.nextInt();
        }while(n < 0 || n > 4);
+
 
        switch (n){
            case 1:
 
                System.out.println("Vas a añadir un nuevo album");
-               Scanner sc = new Scanner(System.in);
+                sc.nextLine();
                System.out.print("Introduce el titulo del album: ");
-               String titulo = sc.nextLine();
+               titulo = sc.nextLine();
                System.out.print("Introduce el nombre del artista: ");
-               String nombArtista = sc.nextLine();
+               nombArtista = sc.nextLine();
                System.out.print("Introduce una descripccion del album: ");
-               String descripcion = sc.nextLine();
+               descripcion = sc.nextLine();
 
                Artista artista=new Artista();
                artista.setNombre(nombArtista);
                Album album = new Album(titulo,artista,descripcion);
 
-               System.out.println(album.getNombre());
+
 
 
                try {
@@ -184,15 +189,68 @@ public class RMIClient {
                menuCrearAlbum(server);
                break;
            case 2:
+               System.out.println("Vas a editar un album");
+               sc.nextLine();
+               System.out.print("Introduce el titulo del album: ");
+               titulo = sc.nextLine();
+               System.out.print("Introduce el nuevo titulo del album: ");
+               String tituloN = sc.nextLine();
+               System.out.print("Introduce el nombre del artista: ");
+                nombArtista = sc.nextLine();
+               System.out.print("Introduce el nuevo nombre del artista: ");
+               String nombArtistaN = sc.nextLine();
+               System.out.print("Introduce la nueva descripccion del album: ");
+               String descripcionN = sc.nextLine();
 
+               Artista artista1=new Artista();
+               artista1.setNombre(nombArtista);
+               Album album1 = new Album(titulo,artista1);
+
+               Artista artistaN=new Artista();
+               artistaN.setNombre(nombArtistaN);
+               Album albumN = new Album(tituloN,artistaN,descripcionN);
+
+               try {
+                   boolean r = server.editarAlbum(album1,albumN);
+
+                   if(r){
+                       System.out.println("El album ha sido editado correctamente.");
+                   }else{
+                       System.out.println("No ha sido editado el album");
+                   }
+               } catch (RemoteException e) {
+                   System.out.println("No se pudo editar el album.");
+                   e.printStackTrace();
+               }
+               menuCrearAlbum(server);
                break;
-
-
-
 
            case 3:
+               System.out.println("Vas a eliminar un album");
+               sc.nextLine();
+               System.out.print("Introduce el titulo del album: ");
+               titulo = sc.nextLine();
+               System.out.print("Introduce el nombre del artista: ");
+               nombArtista = sc.nextLine();
 
+               try {
+                   boolean r = server.eliminarAlbum(titulo,nombArtista);
+
+                   if(r){
+                       System.out.println("El album ha sido eliminado correctamente.");
+                   }else{
+                       System.out.println("No ha sido eliminado el album");
+                   }
+               } catch (RemoteException e) {
+                   System.out.println("Error No se pudo eliminar el album.");
+                   e.printStackTrace();
+               }
+               menuCrearAlbum(server);
                break;
+
+
+
+
            case 4:
                break;
        }
