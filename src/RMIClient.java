@@ -1,10 +1,21 @@
 
+import java.io.Serializable;
 import java.util.Scanner;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 
-public class RMIClient {
+public class RMIClient implements RMIClientInterface, Serializable {
+
+    private String usuario;
+
+    public RMIClient(String usu){
+        this.usuario = usu;
+    }
+
+    public String getUsuario() {
+        return usuario;
+    }
 
     private static void menuEditar(){
 
@@ -116,6 +127,7 @@ public class RMIClient {
         try {
             RMIServerInterface server = (RMIServerInterface) LocateRegistry.getRegistry(7000).lookup("servidor");
             System.out.println(server.sayHello());
+            RMIClientInterface cliente = null;
            // Artista a = server.obtenerArtista("pedro");
             //a.mostrar();
             int n;
@@ -171,6 +183,9 @@ public class RMIClient {
                     if(r){
                         System.out.println("Te has logueado.");
                     }
+                    cliente = new RMIClient(user);
+                    System.out.println(cliente.getUsuario());
+                    server.addCliente(cliente);
                 }while(r == false);
             }else{
                 System.exit(0);
@@ -233,5 +248,10 @@ public class RMIClient {
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void mensaje(String msg) throws RemoteException {
+        System.out.println(msg);
     }
 }

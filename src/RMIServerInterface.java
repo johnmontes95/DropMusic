@@ -1,6 +1,13 @@
+import java.rmi.server.RMIClassLoader;
 import java.util.List;
 
 public interface RMIServerInterface extends java.rmi.Remote {
+     void addCliente(RMIClientInterface client) throws java.rmi.RemoteException;
+
+     void enviarMensajeACliente(String msg, String cliente) throws java.rmi.RemoteException;
+
+     void enviarMensajeAClientes(String msg) throws java.rmi.RemoteException;
+
      String sayHello() throws java.rmi.RemoteException;
 
      boolean regisUser(String nom, String ape, String user, String pass) throws java.rmi.RemoteException;

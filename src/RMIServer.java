@@ -8,16 +8,41 @@ import java.rmi.*;
 import java.rmi.server.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class RMIServer extends UnicastRemoteObject implements RMIServerInterface, Runnable{
-
+    List<RMIClientInterface> lista;
     private static String MULTICAST_ADDRESS = "224.0.224.0";
     private static int PORT = 4321;
     private long SLEEP_TIME = 5000;
 
     public RMIServer() throws java.rmi.RemoteException{
         super();
+        lista = new ArrayList<>();
+    }
+
+    @Override
+    public void addCliente(RMIClientInterface client) throws RemoteException {
+        lista.add(client);
+    }
+
+    @Override
+    public void enviarMensajeACliente(String msg, String cliente) throws RemoteException {
+        /*for(RMIClientInterface c : lista) {
+            if (c.getUsuario().equals(cliente)) {
+                c.mensaje(msg);
+            }
+        }*/
+    }
+
+    @Override
+    public void enviarMensajeAClientes(String msg) throws RemoteException {
+        for(RMIClientInterface c: lista){
+            System.out.println(c.getUsuario());
+            c.mensaje(msg);
+        }
     }
 
     public String sayHello() throws RemoteException {
@@ -60,6 +85,8 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             if(msg.equals("on")){
                 r = true;
             }
+
+            enviarMensajeAClientes("Se ha logueado el usuario: " + user);
         } catch (IOException e) {
             e.printStackTrace();
         }
