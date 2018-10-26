@@ -310,6 +310,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                 //comprobar si esta el album
                 if (!estaAlbum(c.getAl().getNombre(),c.getAl().getA().getNombre())) {
                     //Si no esta se crea el album (Este metodo se encarga tambien de crear el artista si no existiese)
+                   // c.getAl().setDescripcion("Desconoccida");
                     anadirAlbum(c.getAl());
                 }
 
@@ -326,10 +327,66 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         return r;
     }
     public boolean editarCancion(Cancion c,Cancion n) throws  RemoteException{
-        return false;
+        boolean r=false;
+        String datos = "type|edit_cancion;nombre|" + c.getTitulo() + ";artista|" + c.getAl().getA().getNombre()  +";album|"+c.getAl().getNombre()+";nombreN|" + n.getTitulo() + ";artistaN|" + n.getAl().getA().getNombre() +";albumN|"+n.getAl().getNombre() +";duracionN|"  + n.getDuracion() + "\n";
+
+        try {
+
+            // Si no existe esa cancion no hace nada
+            if (estaCancion(c)) {
+
+                //Si existe la nueva se elimina el registro antiguo
+                if (estaCancion(n)) {
+                    //Habria quie eliminar uno de los dos  registros
+                    eliminarCancion(c);
+
+                }else{
+                    //Se conmprueba si existe el album nuevo
+
+                    if (estaAlbum(n.getAl().getNombre(),n.getAl().getA().getNombre())) {
+
+                        //Como existe el album no se hace nada
+
+
+                    } else {
+                        //Si no existe se crea
+                        anadirAlbum(n.getAl());
+                    }
+
+                    //Se introduce la cancion
+                    sendUDPMessage(datos);
+                    String msg = (String) mensajeUDP(receiveUDPMessage().trim());
+                    r = msg.equals("true");
+                }
+            }
+
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return r;
+
     }
     public boolean eliminarCancion(Cancion c) throws  RemoteException{
-        return false;
+        boolean r = false;
+        String datos = "type|delete_cancion;nombre|" + c.getTitulo() + ";artista|" + c.getAl().getA().getNombre()+";album|"+c.getAl().getNombre() +"\n";
+
+        try {
+
+            // Si no existe esa cancion
+            if (estaCancion(c)) {
+
+                //Se elimina la cancion
+                sendUDPMessage(datos);
+                String msg = (String) mensajeUDP(receiveUDPMessage().trim());
+                r = msg.equals("true");
+
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return r;
     }
 
 
@@ -408,6 +465,9 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                 break;
             case "ra_cancion":
                 msg=mapa.get("creado");
+                break;
+            case "redit_cancion":
+                msg=mapa.get("editado");
                 break;
             default:
 

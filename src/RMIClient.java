@@ -263,9 +263,9 @@ public class RMIClient {
        int n;
        Scanner sc = new Scanner(System.in);
        String titulo;
-       String nombartista;
-       String nombalbum;
-       int duraccion;
+       String nombArtista;
+       String nombAlbum;
+       int duracion;
        Cancion cancion=new Cancion();
        Album album = new Album();
        Artista artista=new Artista();
@@ -288,18 +288,18 @@ public class RMIClient {
                System.out.print("Introduce el titulo de la cancion: ");
                titulo = sc.nextLine();
                System.out.print("Introduce la duracion de la cancion en segundos: ");
-               duraccion = sc.nextInt();
-               1sc.nextLine();
+               duracion = sc.nextInt();
+               sc.nextLine();
                System.out.print("Introduce el nombre del artista: ");
-               nombartista = sc.nextLine();
+               nombArtista = sc.nextLine();
                System.out.print("Introduce el nombre del album: ");
-               nombalbum = sc.nextLine();
+               nombAlbum = sc.nextLine();
 
-               artista.setNombre(nombartista);
+               artista.setNombre(nombArtista);
                album.setA(artista);
-               album.setNombre(nombalbum);
+               album.setNombre(nombAlbum);
                cancion.setAl(album);
-               cancion.setDuracion(duraccion);
+               cancion.setDuracion(duracion);
                cancion.setTitulo(titulo);
 
 
@@ -317,13 +317,89 @@ public class RMIClient {
                    System.out.println("No se pudo añadir el album.");
                    e.printStackTrace();
                }
-               menuCrearAlbum(server);
+               menuCrearCancion(server);
                break;
 
 
            case 2:
+               System.out.println("Vas a editar una cancion");
+               sc.nextLine();
+               System.out.print("Introduce el titulo de la cancion: ");
+               titulo = sc.nextLine();
+               System.out.print("Introduce el nuevo titulo de la cancion: ");
+               String tituloN = sc.nextLine();
+               System.out.print("Introduce el nombre del artista: ");
+               nombArtista = sc.nextLine();
+               System.out.print("Introduce el nuevo nombre del artista: ");
+               String nombArtistaN = sc.nextLine();
+               System.out.print("Introduce el nombre del album: ");
+               nombAlbum = sc.nextLine();
+               System.out.print("Introduce el nuevo nombre del album: ");
+               String nombAlbumN = sc.nextLine();
+               System.out.print("Introduce la nueva duraccion de la cancion: ");
+               duracion = sc.nextInt();
+
+
+
+               artista.setNombre(nombArtista);
+               album.setA(artista);
+               album.setNombre(nombAlbum);
+               cancion.setTitulo(titulo);
+               cancion.setAl(album);
+
+               Artista artistaN=new Artista();
+               artistaN.setNombre(nombArtistaN);
+               Album albumN = new Album(nombAlbumN,artistaN);
+               Cancion cancionN= new Cancion();
+               cancionN.setAl(albumN);
+               cancionN.setDuracion(duracion);
+               cancionN.setTitulo(tituloN);
+
+               try {
+                   boolean r = server.editarCancion(cancion,cancionN);
+
+                   if(r){
+                       System.out.println("La cancion ha sido editado correctamente.");
+                   }else{
+                       System.out.println("No ha sido editada la cancion");
+                   }
+               } catch (RemoteException e) {
+                   System.out.println("No se pudo editar la cancion.");
+                   e.printStackTrace();
+               }
+               menuCrearCancion(server);
+
                break;
            case 3:
+               System.out.println("Vas a eliminar una cancion");
+               sc.nextLine();
+               System.out.print("Introduce el titulo de la cancion: ");
+               titulo = sc.nextLine();
+               System.out.print("Introduce el nombre del artista: ");
+               nombArtista = sc.nextLine();
+               System.out.print("Introduce el nombre del album: ");
+               nombAlbum = sc.nextLine();
+
+
+               artista.setNombre(nombArtista);
+               album.setA(artista);
+               album.setNombre(nombAlbum);
+               cancion.setTitulo(titulo);
+               cancion.setAl(album);
+
+               try {
+                   boolean r = server.eliminarCancion(cancion);
+
+                   if(r){
+                       System.out.println("La cancion ha sido eliminada correctamente.");
+                   }else{
+                       System.out.println("No ha sido eliminada la cancion");
+                   }
+               } catch (RemoteException e) {
+                   System.out.println("Error No se pudo eliminar la cancion.");
+                   e.printStackTrace();
+               }
+               menuCrearCancion(server);
                break;
            default:
                break;
