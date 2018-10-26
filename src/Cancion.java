@@ -1,15 +1,23 @@
-public class Cancion {
+import java.io.Serializable;
+
+public class Cancion implements Serializable {
 
     private String titulo;
-    private Artista a;
+
+   // private Artista a; El artista ya estaria en el album no ?
     private Album al;
     private int duracion;
 
-    public Cancion(String titulo, Artista a, Album al, int d) {
+
+    public Cancion(String titulo, Album al, int d) {
         this.titulo = titulo;
-        this.a = a;
+        //this.a = a;
         this.al = al;
         this.duracion = d;
+    }
+
+    public Cancion() {
+
     }
 
     public String getTitulo() {
@@ -20,6 +28,7 @@ public class Cancion {
         this.titulo = titulo;
     }
 
+    /*
     public Artista getA() {
         return a;
     }
@@ -27,7 +36,7 @@ public class Cancion {
     public void setA(Artista a) {
         this.a = a;
     }
-
+*/
     public Album getAl() {
         return al;
     }
@@ -46,7 +55,7 @@ public class Cancion {
 
     public void datosCancion(){
         System.out.println("Nombre: " + this.getTitulo());
-        System.out.println("Artista: " + this.getA().getNombre());
+        System.out.println("Artista: " + this.getAl().getA().getNombre());
         System.out.println("Album: " + this.getAl().getNombre());
         System.out.println("Duracion: " + this.getDuracion());
     }

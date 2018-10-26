@@ -280,6 +280,59 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
     }
 
 
+    @Override
+    public boolean estaCancion(Cancion c) throws RemoteException{
+
+        boolean r = false;
+        String datos = "type|existe_cancion;titulo|" + c.getTitulo()+";artista|"+c.getAl().getA().getNombre() +";album|"+c.getAl().getNombre()+ "\n";
+
+        try {
+            sendUDPMessage(datos);
+            String msg = (String) mensajeUDP(receiveUDPMessage().trim());
+            r = msg.equals("true");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return r;
+    }
+    public boolean anadirCancion(Cancion c) throws  RemoteException{
+        boolean r = false;
+
+        String datos = "type|a_cancion;nombre|" + c.getTitulo() + ";artista|" + c.getAl().getA().getNombre() + ";album|"  + c.getAl().getNombre() +";duracion|"+c.getDuracion()+ "\n";
+
+        try {
+            //Comprobar si existe la cancion
+            if(estaCancion(c)) {
+                System.out.println("Ya existe esa cancion");
+
+
+            }else{
+                //comprobar si esta el album
+                if (!estaAlbum(c.getAl().getNombre(),c.getAl().getA().getNombre())) {
+                    //Si no esta se crea el album (Este metodo se encarga tambien de crear el artista si no existiese)
+                    anadirAlbum(c.getAl());
+                }
+
+                //Una vez con la certeza de que no existe esa cancion y si el album y artista se introduce la cancion
+                sendUDPMessage(datos);
+                String msg = (String) mensajeUDP(receiveUDPMessage().trim());
+                r = msg.equals("true");
+            }
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return r;
+    }
+    public boolean editarCancion(Cancion c,Cancion n) throws  RemoteException{
+        return false;
+    }
+    public boolean eliminarCancion(Cancion c) throws  RemoteException{
+        return false;
+    }
+
+
 
     public String receiveUDPMessage() throws IOException {
         byte[] buffer=new byte[1024];
@@ -350,6 +403,12 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             case "rdelete_album":
                 msg=mapa.get("delete");
             break;
+            case "rexiste_cancion":
+                msg=mapa.get("existe");
+                break;
+            case "ra_cancion":
+                msg=mapa.get("creado");
+                break;
             default:
 
 

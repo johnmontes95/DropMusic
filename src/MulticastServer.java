@@ -59,6 +59,11 @@ public class MulticastServer extends Thread{
             String generoN;
             String descr;
             String descrN;
+            String cancion;
+            String cancionN;
+            int duracion;
+            int duracionN;
+
             
             
             
@@ -602,6 +607,104 @@ public class MulticastServer extends Thread{
                 }
             }
             break;
+
+                case "existe_cancion":
+
+                    System.out.println("Comprobacion de la cancion");
+
+                    cancion = mapa.get("titulo");
+                    artista = mapa.get("artista");
+                    album = mapa.get("album");
+
+                    try {
+                        con = DriverManager.getConnection(Config.URL, Config.USERDB, Config.PASSDB);
+
+                        String sql = "Select * from musica where titulo='"+cancion+"' and Artista='"+artista+"' and Album='"+album+"'";
+                        Statement ps = con.createStatement();
+                        ResultSet rs= ps.executeQuery(sql);
+                        System.out.println(cancion+artista+album);
+
+                        String mensaje = null;
+
+                        rs.next();
+                        System.out.println(album + artista);
+                        if (rs.getRow() > 0) {
+
+                            mensaje = "type|rexiste_cancion;existe|" + "true";
+                        } else {
+                            mensaje = "type|rexiste_cancion;existe|" + "false";
+                        }
+
+
+                        try {
+                            sendUDPMessage(mensaje);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        ps.close();
+                        rs.close();
+
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }finally{
+                        try {
+                            if(con != null) {
+                                con.close();
+                            }
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+
+
+
+                    break;
+                case "a_cancion":
+                    System.out.println("Añadir cancion");
+
+                    nombre = mapa.get("nombre");
+                    artista = mapa.get("artista");
+                    album = mapa.get("album");
+                    duracion=Integer.parseInt(mapa.get("duracion"));
+
+
+                    try {
+                        con = DriverManager.getConnection(Config.URL, Config.USERDB, Config.PASSDB);
+
+                        String sql = "insert into musica values('"+nombre+"','" +artista+"','" +album+"','"+duracion+"')";
+
+                        PreparedStatement ps = con.prepareStatement(sql);
+
+                        int i = ps.executeUpdate();
+                        String mensaje = null;
+                        if(i == 1){
+                            mensaje = "type|ra_cancion;creado|" + "true";
+                        }else{
+                            mensaje = "type|ra_cancion;creado|" + "false";
+                        }
+
+                        try {
+                            sendUDPMessage(mensaje);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        ps.close();
+
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }finally{
+                        try {
+                            if(con != null) {
+                                con.close();
+                            }
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    break;
                 default:
                     System.out.print("");
             }

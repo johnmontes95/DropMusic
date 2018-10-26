@@ -33,6 +33,7 @@ public class RMIClient {
                         menuCrearAlbum(server);
                         break;
                     case 3:
+                        menuCrearCancion(server);
                         break;
                     default:
                         break;
@@ -256,7 +257,87 @@ public class RMIClient {
        }
 
    }
-    public void menuGestion(){
+
+   private static void menuCrearCancion(RMIServerInterface server){
+
+       int n;
+       Scanner sc = new Scanner(System.in);
+       String titulo;
+       String nombartista;
+       String nombalbum;
+       int duraccion;
+       Cancion cancion=new Cancion();
+       Album album = new Album();
+       Artista artista=new Artista();
+
+       do {
+           System.out.println("1. Añadir Cancion");
+           System.out.println("2. Editar Cancion");
+           System.out.println("3. Eliminar Cancion");
+           System.out.println("4. Volver");
+           System.out.println("Selecciona una opción: ");
+           n = sc.nextInt();
+       }while(n < 0 || n > 4);
+
+
+       switch (n){
+
+           case 1:
+               System.out.println("Vas a añadir una nueva cancion");
+               sc.nextLine();
+               System.out.print("Introduce el titulo de la cancion: ");
+               titulo = sc.nextLine();
+               System.out.print("Introduce la duracion de la cancion en segundos: ");
+               duraccion = sc.nextInt();
+               1sc.nextLine();
+               System.out.print("Introduce el nombre del artista: ");
+               nombartista = sc.nextLine();
+               System.out.print("Introduce el nombre del album: ");
+               nombalbum = sc.nextLine();
+
+               artista.setNombre(nombartista);
+               album.setA(artista);
+               album.setNombre(nombalbum);
+               cancion.setAl(album);
+               cancion.setDuracion(duraccion);
+               cancion.setTitulo(titulo);
+
+
+
+
+               try {
+                   boolean r = server.anadirCancion(cancion);
+
+                   if(r){
+                       System.out.println("La cancion ha sido añadido correctamente.");
+                   }else{
+                       System.out.println("Ya existe una cancion con ese nombre");
+                   }
+               } catch (RemoteException e) {
+                   System.out.println("No se pudo añadir el album.");
+                   e.printStackTrace();
+               }
+               menuCrearAlbum(server);
+               break;
+
+
+           case 2:
+               break;
+           case 3:
+               break;
+           default:
+               break;
+
+
+
+       }
+
+
+
+   }
+
+
+   public void menuGestion(){
         System.out.println("1. Registrarse");
         System.out.println("2. Autenticarse");
         System.out.println("3. Salir");

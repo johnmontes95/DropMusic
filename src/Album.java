@@ -20,6 +20,10 @@ public class Album implements Serializable {
 
     }
 
+    public Album() {
+
+    }
+
     public String getNombre() {
         return nombre;
     }
