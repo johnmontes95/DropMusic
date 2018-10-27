@@ -1,4 +1,5 @@
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -18,11 +19,13 @@ public class Album implements Serializable {
         this.nombre = nombre;
         this.a = a;
         this.descripcion = descripcion;
+        canciones=new ArrayList<>();
     }
 
     public Album(String nombre, Artista a){
         this.nombre = nombre;
         this.a = a;
+        canciones=new ArrayList<>();
     }
 
     public String getNombre() {
@@ -74,16 +77,31 @@ public class Album implements Serializable {
     }
 
 
+    public void datosAlbumArtista() {
+        System.out.print("Nombre: " + this.nombre);
+        System.out.print(" / Artista: " + this.getA().getNombre());
+        System.out.println(" / Descripción: " + this.getDescripcion());
+    }
     public void datosAlbum() {
-        System.out.println("Nombre: " + this.nombre);
-        System.out.println("Artista: " + this.getA().getNombre());
-        System.out.println("Descripción: " + this.getDescripcion());
+        System.out.print("Nombre Album : " + this.nombre);
+        System.out.println(" / Descripción: " + this.getDescripcion());
+    }
+
+    public void anadirCancion(Cancion c){
+
+        canciones.add(c);
     }
 
     public void verCanciones() {
         List<Cancion> lista = this.getCanciones();
         for (Cancion c : lista) {
             c.datosCancion();
+        }
+    }
+    public void verCancionesAlbum() {
+
+        for (Cancion c : canciones) {
+            c.datosCancionAlbum();
         }
     }
 

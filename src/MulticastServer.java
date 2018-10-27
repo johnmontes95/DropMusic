@@ -65,11 +65,7 @@ public class MulticastServer extends Thread{
             int duracionN;
 
 
-
-
             switch (type){
-
-
                 case "login":
                     System.out.println("Estás en el login");
                     usu = mapa.get("username");
@@ -330,7 +326,7 @@ public class MulticastServer extends Thread{
                         ps.setString(1, nombre);
                         ps.setString(2, artista);
                         if(descr.isEmpty()){
-                            descr="";
+                            descr=" ";
                         }
 
                         ps.setString(3, descr);
@@ -875,12 +871,114 @@ public class MulticastServer extends Thread{
                             mensaje=mensaje+";item_"+i+"|"+ rs1.getString(1);
                             mensaje =mensaje+";desc_"+i+"|"+ rs1.getString(2);
                             i++;
-                            rs1.next();
+
                         }
                         mensaje=mensaje+";cont|"+i+"\n";
 
                         try {
                             sendUDPMessage(mensaje);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        ps.close();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }finally{
+                        try {
+                            if(con != null) {
+                                con.close();
+                            }
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    break;
+                case "buscar_canciones":
+                    System.out.println("Busca las canciones de un album");
+                    album= mapa.get("album");
+                    artista= mapa.get("artista");
+
+
+
+                    try{
+
+                        con = DriverManager.getConnection(Config.URL, Config.USERDB, Config.PASSDB);
+
+                        String sql = "Select titulo,nombreartista,descripcion from `album` WHERE nombreArtista = '"+artista+"'and titulo='"+album+"'";
+                        PreparedStatement ps = con.prepareStatement(sql);
+                        ResultSet rs= ps.executeQuery();
+
+                        String mensaje="type|rbusca_canciones";
+                        if(rs.next()) {
+
+                            mensaje=mensaje+";nombre|"+ rs.getString(1);
+                            mensaje =mensaje+";artista|"+ rs.getString(2);
+                            mensaje =mensaje+";desc|"+ rs.getString(3);
+                        }
+
+                        String sql1 = "Select titulo , duracion from `musica` WHERE Artista = '"+artista+"' and album='"+album+"'";
+                        PreparedStatement ps1 = con.prepareStatement(sql1);
+                        ResultSet rs1= ps1.executeQuery();
+                        int i=0;
+                        while(rs1.next()){
+
+                            mensaje=mensaje+";item_"+i+"|"+ rs1.getString(1);
+                            mensaje =mensaje+";durac_"+i+"|"+ rs1.getString(2);
+                            i++;
+
+                        }
+                        mensaje=mensaje+";cont|"+i+"\n";
+
+                        try {
+                            sendUDPMessage(mensaje);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        ps.close();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }finally{
+                        try {
+                            if(con != null) {
+                                con.close();
+                            }
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    break;
+                case "buscar_album":
+                    System.out.println("Busca los albumes con ese titulo");
+                    album= mapa.get("album");
+                    try{
+
+                        con = DriverManager.getConnection(Config.URL, Config.USERDB, Config.PASSDB);
+
+                        String sql = "Select titulo,nombreartista,descripcion from `album` WHERE titulo = '"+album+"'";
+                        PreparedStatement ps = con.prepareStatement(sql);
+                        ResultSet rs= ps.executeQuery();
+
+                        String mensaje="type|rbusca_album";
+                        int i=0;
+                        if(rs.next()) {
+
+                            mensaje=mensaje+";album|"+ rs.getString(1);
+                            mensaje =mensaje+";artista_"+i+"|"+ rs.getString(2);
+                            mensaje =mensaje+";desc_"+i+"|"+ rs.getString(3);
+                            i++;
+                        }
+                        while(rs.next()){
+
+                            mensaje =mensaje+";artista_"+i+"|"+ rs.getString(2);
+                            mensaje =mensaje+";desc_"+i+"|"+ rs.getString(3);
+                            i++;
+
+                        }
+                        mensaje=mensaje+";cont|"+i+"\n";
+
+                        try {
+                            sendUDPMessage(mensaje);
+
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
