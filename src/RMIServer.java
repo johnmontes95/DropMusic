@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class RMIServer extends UnicastRemoteObject implements RMIServerInterface, Runnable{
-
     List<RMIClientInterface> lista;
     private static String MULTICAST_ADDRESS = "224.0.224.0";
     private static int PORT = 4321;
@@ -22,12 +21,6 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
     public RMIServer() throws java.rmi.RemoteException{
         super();
         lista = new ArrayList<>();
-        try {
-            Registry registry = LocateRegistry.getRegistry(8000);
-            stub = (RMIServerInterfaceReplica) registry.lookup(SERVER_BIND_NAME);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
@@ -59,7 +52,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
     @Override
     public void cambiarPermisos(String editor, String usu) throws RemoteException {
-        String datos = "type|upermisos;usuario|" + usu + "\n";
+        String datos = "type|upermisos;editor|" + editor + ";usuario|" + usu + "\n";
 
         try {
             sendUDPMessage(datos);
@@ -68,10 +61,10 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                 String mensaje = "El usuario " + editor + " ha cambiado sus permisos a editor.";
                 enviarMensajeACliente(mensaje, usu);
             }else{
-                throw new RemoteException("El usuario no existe.");
+                throw new RemoteException("El usuario no existe o no tienes permisos.");
             }
         } catch (IOException e) {
-            e.printStackTrace();
+
             throw new RemoteException("Ha ocurrido un error al actualizar los permisos del usuario.");
         }
 
@@ -119,9 +112,11 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
             if(msg.equals("on")){
                 r = true;
+            }else{
+                throw new RemoteException("No ha podido loguearse.");
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RemoteException("Ha ocurrido un error.");
         }
         return r;
     }
@@ -152,9 +147,11 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                 sendUDPMessage(datos);
                 String msg = (String) mensajeUDP(receiveUDPMessage().trim());
                 r = msg.equals("true");
+            }else{
+                throw new RemoteException("Ya existe ese artista.");
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RemoteException("Error al añadir al artista.");
         }
         return r;
     }
@@ -469,6 +466,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         }
         return n;
     }
+
     public Album buscarCanciones(Album al)throws  RemoteException{
 
         String datos = "type|buscar_canciones;album|" + al.getNombre() +";artista|"+al.getA().getNombre()+"\n";
@@ -488,17 +486,31 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         }
         return n;
     }
+
+    @Override
+    public void aniadirCritica(String autor, String artista, String album, int punt, String cr) throws RemoteException {
+        String datos = "type|a_crit;autor|" + autor + ";artista|" + artista + ";album|"  + album + ";punt|" + punt + ";crit|" + cr + "\n";
+
+        try {
+            sendUDPMessage(datos);
+            String result = (String) mensajeUDP(receiveUDPMessage().trim());
+            if(!result.equals("true")){
+                throw new RemoteException("No se ha podido insertar la crítica.");
+            }
+        } catch (IOException e) {
+            throw new RemoteException("No se ha podido insertar la crítica.");
+        }
+    }
+
+
     public ArrayList<Album> buscarAlbum(String al)throws  RemoteException{
 
         String datos = "type|buscar_album;album|" + al +"\n";
         ArrayList<Album> albunes=null;
         try {
-
                 sendUDPMessage(datos);
                 albunes=(ArrayList<Album>) (mensajeUDP(receiveUDPMessage().trim()));
-
         } catch (IOException e) {
-            //e.printStackTrace();
             throw new RemoteException("No se puede obtener el album");
         }
         return  albunes;
@@ -701,6 +713,10 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                 }
 
 
+                break;
+
+            case "t_crit":
+                msg = mapa.get("aniadida");
                 break;
             default:
 

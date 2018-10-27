@@ -1,3 +1,4 @@
+import java.rmi.Remote;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.rmi.NotBoundException;
@@ -75,7 +76,6 @@ public class RMIClient {
                 Scanner sc1 = new Scanner(System.in);
                 System.out.print("Introduce el genero de la musica del artista: ");
                 String g = sc1.nextLine();
-                //Artista ar = new Artista(a, g);
                 try {
                     boolean r = server.anadirArtista(a, g);
 
@@ -676,8 +676,11 @@ public class RMIClient {
                                 e1.getMessage();
                             }
                             if(r){
-                                r = server.login(usu, pass);
-                                System.out.println("He entrado");
+                                try {
+                                    r = server.login(usu, pass);
+                                }catch(RemoteException e){
+                                    System.out.println(e.getMessage());
+                                }
                             }
 
                         }while( r == false);
@@ -751,19 +754,30 @@ public class RMIClient {
                             sc.nextLine();
                             System.out.println("Escribe el nombre del álbum");
                             String album = scan.nextLine();
-                            scan.nextLine();
-                            int n = 0;
+                            int num = 0;
                             do{
-                                System.out.println("Puntuación del álbum");
-                                n = scan.nextInt();
-                            }while(n.);
+                                System.out.println("Puntuación del álbum (0-5)");
+                                num = scan.nextInt();
+                            }while(num < 0 || n > 5);
+                            scan.nextLine();
+                            System.out.println("Comentario: ");
+                            String critica = scan.nextLine();
+                            try {
+                                server.aniadirCritica(cliente.getUsuario(), ar, album, num, critica);
+                            }catch(RemoteException e){
+                                System.out.println(e.getMessage());
+                            }
                             break;
                         case 5:
                             System.out.println("Vas a cambiar los permisos de un usuario");
                             sc.nextLine();
                             System.out.println("Introduce el nombre del usuario:");
                             String usuario = sc.nextLine();
-                            server.cambiarPermisos(cliente.getUsuario(), usuario);
+                            try {
+                                server.cambiarPermisos(cliente.getUsuario(), usuario);
+                            }catch (RemoteException e){
+                                System.out.println(e.getMessage());
+                            }
                             break;
                         case 6:
                             break;
@@ -772,6 +786,7 @@ public class RMIClient {
                         case 8:
                             break;
                         case 9:
+                            server.eliminarCliente(cliente);
                             System.exit(0);
                             break;
                         default:
