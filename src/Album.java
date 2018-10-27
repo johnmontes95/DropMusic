@@ -1,27 +1,28 @@
 import java.io.Serializable;
 import java.util.List;
+import java.util.Scanner;
 
 public class Album implements Serializable {
     private String nombre;
     private Artista a;
     private String descripcion;
     private List<Cancion> canciones;
+    private List<Critica> criticas;
     private int numCanciones;
     private int puntuacion;
 
-    public Album(String nombre, Artista a, String descripcion){
+    public Album() {
+    }
+
+    public Album(String nombre, Artista a, String descripcion) {
         this.nombre = nombre;
         this.a = a;
         this.descripcion = descripcion;
     }
+
     public Album(String nombre, Artista a){
         this.nombre = nombre;
         this.a = a;
-
-    }
-
-    public Album() {
-
     }
 
     public String getNombre() {
@@ -64,15 +65,68 @@ public class Album implements Serializable {
         this.numCanciones = numCanciones;
     }
 
-    public int getPuntuacion() {
-        return puntuacion;
+    public List<Critica> getCriticas() {
+        return criticas;
     }
 
-    public void setPuntuacion(int puntuacion) {
-        this.puntuacion = puntuacion;
+    public void setCriticas(List<Critica> criticas) {
+        this.criticas = criticas;
     }
 
-    public void menu(){
 
+    public void datosAlbum() {
+        System.out.println("Nombre: " + this.nombre);
+        System.out.println("Artista: " + this.getA().getNombre());
+        System.out.println("Descripción: " + this.getDescripcion());
+    }
+
+    public void verCanciones() {
+        List<Cancion> lista = this.getCanciones();
+        for (Cancion c : lista) {
+            c.datosCancion();
+        }
+    }
+
+    public void verCriticas() {
+        List<Critica> lista = this.getCriticas();
+        for (Critica c : lista) {
+            c.detalles();
+        }
+    }
+
+    public void menu() {
+
+        int n = 0;
+        do {
+            System.out.println("Album: " + this.getNombre());
+            System.out.println("1. Obtener detalles album");
+            System.out.println("2. Ver canciones");
+            System.out.println("3. Ver críticas");
+            System.out.println("4. Ver puntuación media");
+            System.out.println("5. Consultar detalles del artista");
+            System.out.println("Presiones otro número para salir");
+            Scanner sc = new Scanner(System.in);
+            System.out.print("Selecciona una opción: ");
+            n = sc.nextInt();
+
+            switch (n) {
+                case 1:
+                    this.datosAlbum();
+                    break;
+                case 2:
+                    this.verCanciones();
+                    break;
+                case 3:
+                    this.verCriticas();
+                    break;
+                case 4:
+                    break;
+                case 5:
+                    break;
+                default:
+                    System.out.println("Has salido.");
+            }
+
+        } while (n > 0 && n < 6);
     }
 }

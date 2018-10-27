@@ -45,7 +45,7 @@ public class MulticastServer extends Thread{
 
         if(mapa.containsKey("type")){
             String type = mapa.get("type");
-            
+
             Connection con=null;
             String usu;
             String pass;
@@ -64,18 +64,18 @@ public class MulticastServer extends Thread{
             int duracion;
             int duracionN;
 
-            
-            
-            
+
+
+
             switch (type){
-                
-                
+
+
                 case "login":
                     System.out.println("Estás en el login");
                     usu = mapa.get("username");
                     pass = mapa.get("password");
 
-                    
+
                     try {
                         con = DriverManager.getConnection(Config.URL, Config.USERDB, Config.PASSDB);
 
@@ -97,7 +97,6 @@ public class MulticastServer extends Thread{
                         try {
                             sendUDPMessage(mensaje);
                         } catch (IOException e) {
-                            System.out.print("Estoy aquí");
                             e.printStackTrace();
                         }
 
@@ -105,7 +104,7 @@ public class MulticastServer extends Thread{
                         ps.close();
                         rs.close();
                     } catch (SQLException e) {
-                        e.printStackTrace();
+                        //e.printStackTrace();
                     }finally{
                         try {
                             if(con != null) {
@@ -153,7 +152,7 @@ public class MulticastServer extends Thread{
                         String mensaje1 = null;
                         if(i == 1){
                             mensaje1 = "type|registro;registrado|" + "true";
-                           System.out.println("Usuario creado");
+                            System.out.println("Usuario creado");
                         }else{
                             mensaje1 = "type|registro;registrado|" + "false";
                             System.out.println("Usuario no creado");
@@ -374,19 +373,19 @@ public class MulticastServer extends Thread{
                         con = DriverManager.getConnection(Config.URL, Config.USERDB, Config.PASSDB);
 
                         String sql = "Select * from artista where nombre='"+nombre+"'";
-                       Statement ps = con.createStatement();
-                       ResultSet rs= ps.executeQuery(sql);
+                        Statement ps = con.createStatement();
+                        ResultSet rs= ps.executeQuery(sql);
 
                         String mensaje = null;
 
-                            rs.next();
+                        rs.next();
 
-                            if (rs.getRow() > 0) {
+                        if (rs.getRow() > 0) {
 
-                                mensaje = "type|ss_artist;existe|" + "true";
-                            } else {
-                                mensaje = "type|ss_artist;existe|" + "false";
-                            }
+                            mensaje = "type|ss_artist;existe|" + "true";
+                        } else {
+                            mensaje = "type|ss_artist;existe|" + "false";
+                        }
 
 
                         try {
@@ -512,11 +511,11 @@ public class MulticastServer extends Thread{
 
 
                     break;
-                    
+
                 case "edit_album":
                     System.out.println("Editar album");
-                     album= mapa.get("nombre");
-                     artista =mapa.get("artista");
+                    album= mapa.get("nombre");
+                    artista =mapa.get("artista");
 
                     albumN= mapa.get("nombreN");
                     artistaN =mapa.get("artistaN");
@@ -576,42 +575,42 @@ public class MulticastServer extends Thread{
 
                         con = DriverManager.getConnection(Config.URL, Config.USERDB, Config.PASSDB);
 
-                    String sql = "delete from `album` WHERE titulo = '"+album+"'and NombreArtista='"+artista+"'";
-                    PreparedStatement ps = con.prepareStatement(sql);
+                        String sql = "delete from `album` WHERE titulo = '"+album+"'and NombreArtista='"+artista+"'";
+                        PreparedStatement ps = con.prepareStatement(sql);
 
 
 
-                    String mensaje = null;
-                    int i = ps.executeUpdate();
-                    if (i>=1) {
+                        String mensaje = null;
+                        int i = ps.executeUpdate();
+                        if (i>=1) {
 
-                        mensaje = "type|rdelete_album;delete|" + "true";
-                    } else {
-                        mensaje = "type|rdelete_album;delete|" + "false";
-                    }
+                            mensaje = "type|rdelete_album;delete|" + "true";
+                        } else {
+                            mensaje = "type|rdelete_album;delete|" + "false";
+                        }
 
 
-                    try {
-                        sendUDPMessage(mensaje);
-                    } catch (IOException e) {
+                        try {
+                            sendUDPMessage(mensaje);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        ps.close();
+
+
+                    } catch (SQLException e) {
                         e.printStackTrace();
+                    }finally{
+                        try {
+                            if(con != null) {
+                                con.close();
+                            }
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
                     }
-
-                    ps.close();
-
-
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }finally{
-                try {
-                    if(con != null) {
-                        con.close();
-                    }
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            break;
+                    break;
 
                 case "existe_cancion":
 
@@ -773,24 +772,55 @@ public class MulticastServer extends Thread{
                     cancion= mapa.get("nombre");
                     artista =mapa.get("artista");
                     album=mapa.get("album");
-
-
                     try{
-
                         con = DriverManager.getConnection(Config.URL, Config.USERDB, Config.PASSDB);
-
                         String sql = "delete from `musica` WHERE titulo = '"+cancion+"'and Artista='"+artista+"'and album='"+album+"'";
                         PreparedStatement ps = con.prepareStatement(sql);
-
-
-
                         String mensaje = null;
                         int i = ps.executeUpdate();
                         if (i>=1) {
-
                             mensaje = "type|rdelete_album;delete|" + "true";
                         } else {
                             mensaje = "type|rdelete_album;delete|" + "false";
+                        }
+
+                        try {
+                            sendUDPMessage(mensaje);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        ps.close();
+
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }finally{
+                        try {
+                            if(con != null) {
+                                con.close();
+                            }
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    break;
+
+                case "upermisos":
+                    System.out.println("Actualizar permisos");
+                    usu= mapa.get("usuario");
+                    System.out.println(usu);
+                    try{
+                        con = DriverManager.getConnection(Config.URL, Config.USERDB, Config.PASSDB);
+
+                        String sql = "update persona set privilegios = 'editor' where usuario = ?";
+                        PreparedStatement ps = con.prepareStatement(sql);
+                        ps.setString(1, usu);
+
+                        String mensaje = null;
+                        int i = ps.executeUpdate();
+                        if (i==1) {
+                            mensaje = "type|pupdate;actualizados|" + "true";
+                        } else {
+                            mensaje = "type|pupdate;actualizados|" + "false";
                         }
 
 
@@ -803,6 +833,58 @@ public class MulticastServer extends Thread{
                         ps.close();
 
 
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }finally{
+                        try {
+                            if(con != null) {
+                                con.close();
+                            }
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    break;
+                case "buscar_artista":
+                    System.out.println("Busca los albumes de un artista");
+                    nombre= mapa.get("nombre");
+
+
+
+                    try{
+
+                        con = DriverManager.getConnection(Config.URL, Config.USERDB, Config.PASSDB);
+
+                        String sql = "Select nombre , genero from `artista` WHERE nombre = '"+nombre+"'";
+                        PreparedStatement ps = con.prepareStatement(sql);
+                        ResultSet rs= ps.executeQuery();
+
+                        String mensaje="type|rbusca_artista";
+                        if(rs.next()) {
+
+                            mensaje=mensaje+";nombre|"+ rs.getString(1);
+                            mensaje =mensaje+";genero|"+ rs.getString(2);
+                        }
+
+                        String sql1 = "Select titulo , descripcion from `album` WHERE nombreArtista = '"+nombre+"'";
+                        PreparedStatement ps1 = con.prepareStatement(sql1);
+                        ResultSet rs1= ps1.executeQuery();
+                        int i=0;
+                        while(rs1.next()){
+
+                            mensaje=mensaje+";item_"+i+"|"+ rs1.getString(1);
+                            mensaje =mensaje+";desc_"+i+"|"+ rs1.getString(2);
+                            i++;
+                            rs1.next();
+                        }
+                        mensaje=mensaje+";cont|"+i+"\n";
+
+                        try {
+                            sendUDPMessage(mensaje);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        ps.close();
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }finally{

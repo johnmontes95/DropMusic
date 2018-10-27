@@ -1,25 +1,24 @@
-
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
-import java.rmi.*;
-import java.rmi.server.*;
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ArrayList;
 
-public class RMIServer extends UnicastRemoteObject implements RMIServerInterface, Runnable{
+public class RMIServerReplica extends UnicastRemoteObject implements RMIServerInterface, Runnable{
 
     List<RMIClientInterface> lista;
     private static String MULTICAST_ADDRESS = "224.0.224.0";
     private static int PORT = 4321;
     private long SLEEP_TIME = 5000;
 
-    public RMIServer() throws java.rmi.RemoteException{
+    public RMIServerReplica() throws RemoteException{
         super();
         lista = new ArrayList<>();
     }
@@ -114,6 +113,9 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             if(msg.equals("on")){
                 r = true;
             }
+
+            enviarMensajeAClientes("Se ha logueado " + user);
+            enviarMensajeACliente("Mensaje a john", "john");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -214,9 +216,9 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
         try {
 
-                sendUDPMessage(datos);
-                String msg = (String) mensajeUDP(receiveUDPMessage().trim());
-                r = msg.equals("true");
+            sendUDPMessage(datos);
+            String msg = (String) mensajeUDP(receiveUDPMessage().trim());
+            r = msg.equals("true");
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -443,26 +445,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         return r;
     }
 
-    @Override
-    public Artista buscarArtista(Artista a) {
 
-        String datos = "type|buscar_artista;nombre|" + a.getNombre() +"\n";
-        Artista n=null;
-        try {
-            // Si no existe el artista no se ejecuta
-
-            if (existeArtista(a.getNombre())) {
-                sendUDPMessage(datos);
-
-                n = (Artista) mensajeUDP(receiveUDPMessage().trim());
-
-
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return n;
-    }
 
     public String receiveUDPMessage() throws IOException {
         byte[] buffer=new byte[1024];
@@ -547,26 +530,6 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                 break;
             case "pupdate":
                 msg = mapa.get("actualizados");
-                break;
-            case "rbusca_artista":
-                msg = new Artista(mapa.get("nombre"), mapa.get("genero"));
-                int i =Integer.parseInt( mapa.get("cont"));
-                String nombre;
-                String desc;
-                Album al=null;
-
-                for(int j=0;j<=i;j++){
-
-                    nombre=mapa.get("item_"+ j);
-                    al = new Album();
-                    al.setNombre(nombre);
-                    desc=mapa.get("desc_"+ j);
-                    al.setDescripcion(desc);
-                    ((Artista) msg).aniadirAlbum(al);
-
-
-                }
-
             default:
 
 
@@ -592,8 +555,8 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
        /* System.getProperties().put("java.security.policy", "policy.all");
         System.setSecurityManager(new RMISecurityManager());*/
         try {
-            RMIServer server = new RMIServer();
-            Registry r = LocateRegistry.createRegistry(7000);
+            RMIServerReplica server = new RMIServerReplica();
+            Registry r = LocateRegistry.createRegistry(7001);
             r.rebind("servidor", server);
             System.out.println("Servidor iniciado.");
             Thread client = new Thread(server);
