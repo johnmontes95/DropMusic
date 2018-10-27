@@ -14,7 +14,6 @@ public interface RMIServerInterface extends java.rmi.Remote {
 
     void cambiarPermisos(String editor, String usu) throws java.rmi.RemoteException;
 
-    String sayHello() throws java.rmi.RemoteException;
 
     boolean regisUser(String nom, String ape, String user, String pass) throws java.rmi.RemoteException;
 
