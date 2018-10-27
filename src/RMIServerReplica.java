@@ -3,22 +3,22 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
-import java.rmi.*;
-import java.rmi.server.*;
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ArrayList;
 
-public class RMIServer extends UnicastRemoteObject implements RMIServerInterface, Runnable{
+public class RMIServerReplica extends UnicastRemoteObject implements RMIServerInterface, Runnable{
 
     List<RMIClientInterface> lista;
     private static String MULTICAST_ADDRESS = "224.0.224.0";
     private static int PORT = 4321;
     private long SLEEP_TIME = 5000;
 
-    public RMIServer() throws java.rmi.RemoteException{
+    public RMIServerReplica() throws RemoteException{
         super();
         lista = new ArrayList<>();
     }
@@ -555,8 +555,8 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
        /* System.getProperties().put("java.security.policy", "policy.all");
         System.setSecurityManager(new RMISecurityManager());*/
         try {
-            RMIServer server = new RMIServer();
-            Registry r = LocateRegistry.createRegistry(7000);
+            RMIServerReplica server = new RMIServerReplica();
+            Registry r = LocateRegistry.createRegistry(7001);
             r.rebind("servidor", server);
             System.out.println("Servidor iniciado.");
             Thread client = new Thread(server);

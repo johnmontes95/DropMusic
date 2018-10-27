@@ -424,19 +424,13 @@ public class RMIClient {
    }
 
 
-   public void menuGestion(){
-        System.out.println("1. Registrarse");
-        System.out.println("2. Autenticarse");
-        System.out.println("3. Salir");
-    }
     public static void main(String args[]) {
         try {
             RMIServerInterface server = (RMIServerInterface) LocateRegistry.getRegistry(7000).lookup("servidor");
             System.out.println(server.sayHello());
             RMIClientImp cliente = null;
-           // Artista a = server.obtenerArtista("pedro");
-            //a.mostrar();
             int n;
+            boolean r = false;
             do{
                 System.out.println("");
                 System.out.println("1. Registrarse");
@@ -446,57 +440,71 @@ public class RMIClient {
                 Scanner sc = new Scanner(System.in);
                 System.out.print("Introduzca un número: ");
                 n = sc.nextInt();
+
+                switch (n){
+                    case 1:
+
+                        do {
+                            System.out.println("Registro DropMusic");
+                            System.out.println("Introduzca su nombre: ");
+                            Scanner sc1 = new Scanner(System.in);
+                            String nom = sc1.nextLine();
+                            System.out.println("Introduzca sus apellidos: ");
+                            Scanner sc2 = new Scanner(System.in);
+                            String ape = sc2.nextLine();
+                            System.out.println("Introduzca su nombre de usuario: ");
+                            Scanner sc3 = new Scanner(System.in);
+                            String usu = sc3.nextLine();
+                            System.out.println("Introduzca su contrasena: ");
+                            Scanner sc4 = new Scanner(System.in);
+                            String pass = sc4.nextLine();
+
+                            try {
+                                r = server.regisUser(nom, ape, usu, pass);
+                                System.out.println("Usuario registrado correctamente");
+                            } catch (RemoteException e1) {
+                                e1.getMessage();
+                            }
+                            if(r){
+                                r = server.login(usu, pass);
+                                System.out.println("He entrado");
+                            }
+
+                        }while( r == false);
+                        break;
+                    case 2:
+                        System.out.println("Autenticación DropMusic");
+                        do {
+                            System.out.print("Nombre de usuario: ");
+                            Scanner sc1 = new Scanner(System.in);
+                            String user = sc1.nextLine();
+                            System.out.print("Contrasena: ");
+                            Scanner sc2 = new Scanner(System.in);
+                            String pass = sc2.nextLine();
+                            try {
+                                r = server.login(user, pass);
+                            } catch (RemoteException e1) {
+                                e1.getMessage();
+                            }
+
+                            try {
+                                cliente = new RMIClientImp(user);
+                            } catch (RemoteException e1) {
+                                e1.getMessage();
+                            }
+
+                        }while(r == false);
+                        break;
+                    case 3:
+                        System.exit(0);
+                        break;
+
+                    default:
+                        System.out.println("Introduce una opción correcta.");
+                    }
+
+
             }while(n<0 || n>3);
-            boolean r = false;
-            if(n == 1){
-                do {
-
-                    System.out.println("Autenticación DropMusic");
-                    System.out.println("Introduzca su nombre: ");
-                    Scanner sc1 = new Scanner(System.in);
-                    String nom = sc1.nextLine();
-                    System.out.println("Introduzca sus apellidos: ");
-                    Scanner sc2 = new Scanner(System.in);
-                    String ape = sc2.nextLine();
-                    System.out.println("Introduzca su nombre de usuario: ");
-                    Scanner sc3 = new Scanner(System.in);
-                    String usu = sc3.nextLine();
-                    System.out.println("Introduzca su contrasena: ");
-                    Scanner sc4 = new Scanner(System.in);
-                    String pass = sc4.nextLine();
-
-                    r = server.regisUser(nom, ape, usu, pass);
-
-                    if(r){
-                        System.out.print("Usuario registrado correctamente.");
-                    }else{
-                        System.out.print("Error al registrar usuario. Inténtelo de nuevo.");
-                    }
-
-                }while( r == false);
-            }else if(n == 2){
-                System.out.println("Autenticación DropMusic");
-                do {
-                    System.out.print("Nombre de usuario: ");
-                    Scanner sc1 = new Scanner(System.in);
-                    String user = sc1.nextLine();
-                    System.out.print("Contrasena: ");
-                    Scanner sc2 = new Scanner(System.in);
-                    String pass = sc2.nextLine();
-                    r = server.login(user, pass);
-
-                    System.out.println(r);
-                    if(r){
-                        System.out.println("Te has logueado.");
-                    }
-                    cliente = new RMIClientImp(user);
-                    System.out.println(cliente.getUsuario());
-                    server.addCliente(cliente);
-                }while(r == false);
-            }else{
-                System.exit(0);
-            }
-
 
             if(r){
                 do {
@@ -538,6 +546,9 @@ public class RMIClient {
                         case 7:
                             break;
                         case 8:
+                            break;
+                        case 9:
+                            System.exit(0);
                             break;
                         default:
                             break;

@@ -97,7 +97,6 @@ public class MulticastServer extends Thread{
                         try {
                             sendUDPMessage(mensaje);
                         } catch (IOException e) {
-                            System.out.print("Estoy aquí");
                             e.printStackTrace();
                         }
 
