@@ -786,6 +786,7 @@ public class RMIClient {
                         case 8:
                             break;
                         case 9:
+                            server.eliminarCliente(cliente);
                             System.exit(0);
                             break;
                         default:
