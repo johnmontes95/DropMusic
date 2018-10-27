@@ -1,5 +1,3 @@
-
-import java.io.Serializable;
 import java.util.Scanner;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -17,10 +15,8 @@ public class RMIClient {
         return usuario;
     }
 
-    private static void menuEditar(){
 
-        try {
-            RMIServerInterface server = (RMIServerInterface) LocateRegistry.getRegistry(7000).lookup("servidor");
+    private static void menuEditar(RMIServerInterface server){
 
             int n;
 
@@ -50,11 +46,7 @@ public class RMIClient {
                         break;
                 }
             } while (n != 4);
-        } catch (NotBoundException e) {
-        e.printStackTrace();
-    } catch (RemoteException e) {
-        e.printStackTrace();
-    }
+
 
     }
 
@@ -423,6 +415,57 @@ public class RMIClient {
 
    }
 
+   private static void menuBuscar(RMIServerInterface server){
+                 int n;
+
+           do {
+
+               System.out.println("");
+               System.out.println("1. Buscar Artista");
+               System.out.println("2. Buscar Genero");
+               System.out.println("3. Buscar Album");
+               System.out.println("4. Volver");
+
+               Scanner sc = new Scanner(System.in);
+               System.out.print("Introduzca un número: ");
+               n = sc.nextInt();
+               sc.nextLine();
+
+               switch (n) {
+
+                   case 1:
+
+                       System.out.print("Introduzca el nombre del Artista a buscar: ");
+                       String artista = sc.nextLine();
+
+                       try {
+                           Artista a=new Artista();
+                           a.setNombre(artista);
+                           a=  server.buscarArtista(a);
+                           System.out.println(a.getNombre()+a.getGenero());
+
+                       } catch (RemoteException e) {
+                           System.out.println("No se pudo añadir el album.");
+                           e.printStackTrace();
+                       }
+                       menuBuscar(server);
+
+                       break;
+                   case 2:
+
+                       break;
+                   case 3:
+
+                       break;
+                   default:
+                       break;
+               }
+           } while (n != 4);
+
+
+
+   }
+
 
     public static void main(String args[]) {
         try {
@@ -526,9 +569,10 @@ public class RMIClient {
 
                     switch(n){
                         case 1:
-                            menuEditar();
+                            menuEditar(server);
                             break;
                         case 2:
+                            menuBuscar(server);
                             break;
                         case 3:
                             break;

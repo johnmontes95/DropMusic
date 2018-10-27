@@ -1,3 +1,4 @@
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -113,9 +114,6 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             if(msg.equals("on")){
                 r = true;
             }
-
-            enviarMensajeAClientes("Se ha logueado " + user);
-            enviarMensajeACliente("Mensaje a john", "john");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -216,9 +214,9 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
         try {
 
-            sendUDPMessage(datos);
-            String msg = (String) mensajeUDP(receiveUDPMessage().trim());
-            r = msg.equals("true");
+                sendUDPMessage(datos);
+                String msg = (String) mensajeUDP(receiveUDPMessage().trim());
+                r = msg.equals("true");
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -445,7 +443,26 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         return r;
     }
 
+    @Override
+    public Artista buscarArtista(Artista a) {
 
+        String datos = "type|buscar_artista;nombre|" + a.getNombre() +"\n";
+        Artista n=null;
+        try {
+            // Si no existe el artista no se ejecuta
+
+            if (existeArtista(a.getNombre())) {
+                sendUDPMessage(datos);
+
+                n = (Artista) mensajeUDP(receiveUDPMessage().trim());
+
+
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return n;
+    }
 
     public String receiveUDPMessage() throws IOException {
         byte[] buffer=new byte[1024];
@@ -530,6 +547,26 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                 break;
             case "pupdate":
                 msg = mapa.get("actualizados");
+                break;
+            case "rbusca_artista":
+                msg = new Artista(mapa.get("nombre"), mapa.get("genero"));
+                int i =Integer.parseInt( mapa.get("cont"));
+                String nombre;
+                String desc;
+                Album al=null;
+
+                for(int j=0;j<=i;j++){
+
+                    nombre=mapa.get("item_"+ j);
+                    al = new Album();
+                    al.setNombre(nombre);
+                    desc=mapa.get("desc_"+ j);
+                    al.setDescripcion(desc);
+                    ((Artista) msg).aniadirAlbum(al);
+
+
+                }
+
             default:
 
 
