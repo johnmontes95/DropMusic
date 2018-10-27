@@ -815,6 +815,58 @@ public class MulticastServer extends Thread{
                         }
                     }
                     break;
+                case "buscar_artista":
+                    System.out.println("Busca los albumes de un artista");
+                    nombre= mapa.get("nombre");
+
+
+
+                    try{
+
+                        con = DriverManager.getConnection(Config.URL, Config.USERDB, Config.PASSDB);
+
+                        String sql = "Select nombre , genero from `artista` WHERE nombre = '"+nombre+"'";
+                        PreparedStatement ps = con.prepareStatement(sql);
+                        ResultSet rs= ps.executeQuery();
+
+                        String mensaje="type|rbusca_artista";
+                        if(rs.next()) {
+
+                            mensaje=mensaje+";nombre|"+ rs.getString(1);
+                            mensaje =mensaje+";genero|"+ rs.getString(2);
+                        }
+
+                        String sql1 = "Select titulo , descripcion from `album` WHERE nombreArtista = '"+nombre+"'";
+                        PreparedStatement ps1 = con.prepareStatement(sql1);
+                        ResultSet rs1= ps1.executeQuery();
+                        int i=0;
+                        while(rs1.next()){
+
+                            mensaje=mensaje+";item_"+i+"|"+ rs1.getString(1);
+                            mensaje =mensaje+";desc_"+i+"|"+ rs1.getString(2);
+                            i++;
+                            rs1.next();
+                        }
+                        mensaje=mensaje+";cont|"+i+"\n";
+
+                        try {
+                            sendUDPMessage(mensaje);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        ps.close();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }finally{
+                        try {
+                            if(con != null) {
+                                con.close();
+                            }
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    break;
                 default:
                     System.out.print("");
             }

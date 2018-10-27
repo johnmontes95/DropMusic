@@ -1,17 +1,22 @@
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Artista implements Serializable {
 
     private String nombre;
     private String genero;
+    private List<Album> albunes;
 
     public Artista(String n, String g){
 
         this.nombre = n;
         this.genero = g;
+        albunes=new ArrayList<>();
     }
     public Artista(){
 
+        albunes=new ArrayList<>();
     }
 
     public String getNombre() {
@@ -24,6 +29,22 @@ public class Artista implements Serializable {
 
     public String getGenero() {
         return genero;
+    }
+
+    public List<Album> getAlbunes() {
+        return albunes;
+    }
+
+    public void mostrarAlbum(){
+
+        for (Album a:albunes){
+
+            a.
+        }
+    }
+
+    public void aniadirAlbum(Album a) {
+        albunes.add(a);
     }
 
     public void setGenero(String genero) {

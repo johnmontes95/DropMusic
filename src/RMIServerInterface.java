@@ -28,5 +28,7 @@ public interface RMIServerInterface extends java.rmi.Remote {
     public boolean eliminarCancion(Cancion c) throws  java.rmi.RemoteException;
     public boolean estaCancion(Cancion c) throws java.rmi.RemoteException;
 
+    Artista buscarArtista(Artista a) throws java.rmi.RemoteException;
+
     //public boolean login(String user, String pass) throws java.rmi.RemoteException;
 }
