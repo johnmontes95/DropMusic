@@ -252,6 +252,10 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         return r;
     }
 
+
+
+
+
     @Override
     public boolean editarAlbum(Album a,Album n) throws RemoteException {
 
@@ -266,6 +270,13 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                 if (estaAlbum(n.getNombre(), n.getA().getNombre())) {
                     //Habria quie eliminar uno de los dos  registros
 
+                    if(n.getA().getNombre().equals(a.getA().getNombre())){
+
+                        sendUDPMessage(datos);
+                        String msg = (String) mensajeUDP(receiveUDPMessage().trim());
+                        r = msg.equals("true");
+                    }
+
 
                 }else{
                     //Se conmprueba si existe el nuevo artista y si no se crea
@@ -273,6 +284,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                     if (existeArtista(n.getA().getNombre())) {
 
                         //Como existe el artista no se hace nada
+
 
 
                     } else {
