@@ -123,6 +123,7 @@ public class Album implements Serializable {
             System.out.println("4. Ver puntuación media");
             System.out.println("5. Consultar detalles del artista");
             System.out.println("Presiona otro número para salir");
+
             Scanner sc = new Scanner(System.in);
             System.out.print("Selecciona una opción: ");
             n = sc.nextInt();

@@ -511,13 +511,28 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                 sendUDPMessage(datos);
                 albunes=(ArrayList<Album>) (mensajeUDP(receiveUDPMessage().trim()));
         } catch (IOException e) {
-            //e.printStackTrace();
             throw new RemoteException("No se puede obtener el album");
         }
         return  albunes;
 
 
     }
+
+    public ArrayList<Artista> buscarGenero(String genero) throws RemoteException{
+
+        String datos = "type|buscar_genero;genero|" + genero +"\n";
+        ArrayList<Artista> artistas=null;
+        try {
+            sendUDPMessage(datos);
+            artistas=(ArrayList<Artista>) (mensajeUDP(receiveUDPMessage().trim()));
+
+        } catch (IOException e) {
+            //e.printStackTrace();
+            throw new RemoteException("No se puede obtener los artistas de ese genero");
+        }
+        return  artistas;
+    }
+
 
 
     public String receiveUDPMessage() throws IOException {
@@ -676,8 +691,33 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
                 break;
 
+            case "rbusca_genero":
+
+
+
+                Artista aartista;
+
+                msg = new ArrayList<Artista>();
+
+                i =Integer.parseInt( mapa.get("cont"));
+                String genero=mapa.get("genero");
+
+                for(int j=0;j<i;j++){
+
+                    aartista=new Artista();
+                    aartista.setNombre(mapa.get("artista_"+j));
+                    aartista.setGenero(genero);
+
+
+                    ((ArrayList<Artista>)msg).add(aartista);
+                }
+
+
+                break;
+
             case "t_crit":
                 msg = mapa.get("aniadida");
+                break;
             default:
 
 

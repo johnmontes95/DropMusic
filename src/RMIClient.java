@@ -443,38 +443,61 @@ public class RMIClient {
                switch (n) {
 
                    case 1:
-
                        System.out.print("Introduzca el nombre del Artista a buscar: ");
+
                        String artista = sc.nextLine();
+                       a=new Artista();
+                       a.setNombre(artista);
+                       menuBuscarArtista(server,a);
+                       break;
+                   case 2:
+                            //Buscar por genero
 
+
+                       System.out.print("Introduzca el genero del Artista a buscar: ");
+                       String genero = sc.nextLine();
+                       List <Artista> artistas;
                        try {
-                           a=new Artista();
-                           a.setNombre(artista);
-                           a=  server.buscarArtista(a);
-                           System.out.println("Artista: "+a.getNombre()+" / Genero: "+a.getGenero());
-                           a.mostrarAlbum();
-
-                           System.out.println("Si quieres ver las canciones de un album introduce el nombre");
-                           String nalbum=sc.nextLine();
 
 
-                           al=new Album();
-                           al.setNombre(nalbum);
-                           al.setA(a);
-                           al=server.buscarCanciones(al);
+                           artistas=server.buscarGenero(genero);
 
-                           System.out.println("Album: "+al.getNombre()+" / Descripccion: "+al.getDescripcion());
-                           //muesta las canciones
-                           al.verCancionesAlbum();
+                           for (Artista ar:artistas){
+
+                               System.out.println("Nombre: "+ar.getNombre());
+                           }
+
+                           int nn;
+                           do {
+
+                               System.out.println("1. Datos de un artista");
+                               System.out.println("2. Volver ");
+                               nn = sc.nextInt();
+
+
+                               switch (nn) {
+
+                                   case 1:
+
+                                       do {
+                                           System.out.println("Elige la posicion del artista(Empezando por 0)");
+                                           pos = sc.nextInt();
+                                       }while(pos>artistas.size()||pos<0);
+
+                                       a=artistas.get(pos);
+                                       menuBuscarArtista(server,a);
+                                       break;
+                                   default:
+                                       break;
+                               }
+
+                           }while(nn!=2);
 
                        } catch (RemoteException e) {
                            System.out.println("No se pudo añadir el album.");
                            e.printStackTrace();
                        }
-                       menuBuscar(server);
 
-                       break;
-                   case 2:
 
                        break;
                    case 3:
@@ -504,13 +527,9 @@ public class RMIClient {
                                        System.out.println("Elige la posicion del album(Empezando por 0)");
                                        nal = sc.nextInt();
                                    }while(nal>albunes.size()||nal<0);
+
                                    al=albunes.get(nal);
-
-                                   al=server.buscarCanciones(al);
-
-                                   System.out.println("Album: "+al.getNombre()+" / Descripccion: "+al.getDescripcion());
-                                   //muesta las canciones
-                                   al.verCancionesAlbum();
+                                   menuBuscarCanciones(server,al);
 
 
                                    break;
@@ -522,10 +541,12 @@ public class RMIClient {
 
                                    //obtienes el objeto artista de ese album en a
                                    a=albunes.get(nal).getA();
+                                   menuBuscarArtista(server,a);
+
 
                                    break;
                                default:
-                                       break;
+                                   break;
 
                            }
 
@@ -534,7 +555,7 @@ public class RMIClient {
                            System.out.println("No se pudo añadir el album.");
                            e.printStackTrace();
                        }
-                       menuBuscar(server);
+
 
                        break;
                    default:
@@ -545,6 +566,71 @@ public class RMIClient {
 
 
    }
+
+   private static void menuBuscarArtista(RMIServerInterface server,Artista a){
+       try {
+
+           a= server.buscarArtista(a);
+           System.out.println("Artista: "+a.getNombre()+" / Genero: "+a.getGenero());
+           a.mostrarAlbum();
+
+
+           Scanner sc = new Scanner(System.in);
+           int n;
+           do {
+
+               System.out.println("1. Ver las canciones de un album");
+               System.out.println("2. Ver las criticas de un album");
+               System.out.println("3. Volver");
+               n = sc.nextInt();
+               sc.nextLine();
+
+                switch(n) {
+                    case 1:
+                        System.out.println("Introduce el nombre del album");
+                        String nalbum = sc.nextLine();
+
+                        Album al = new Album();
+                        al.setNombre(nalbum);
+                        al.setA(a);
+                        menuBuscarCanciones(server, al);
+                    break;
+                    case 2:
+
+                        //Cuando esten las criticas
+                    break;
+
+                    default:
+                    break;
+                }
+           }while(n!=3);
+       } catch (RemoteException e) {
+           System.out.println("");
+           e.printStackTrace();
+       }
+
+   }
+
+   private static void menuBuscarCanciones(RMIServerInterface server, Album al){
+
+       try{
+
+        al=server.buscarCanciones(al);
+
+       System.out.println("Album: "+al.getNombre()+" / Descripccion: "+al.getDescripcion());
+       //muesta las canciones
+       al.verCancionesAlbum();
+
+       Scanner sc = new Scanner(System.in);
+       System.out.println("pulsa cualquier tecla para volver:");
+       String nalbum = sc.nextLine();
+
+
+       } catch (RemoteException e) {
+            System.out.println("");
+            e.printStackTrace();
+        }
+       }
 
 
     public static void main(String args[]) {

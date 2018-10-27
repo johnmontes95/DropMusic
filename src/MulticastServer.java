@@ -1046,6 +1046,51 @@ public class MulticastServer extends Thread{
                         }
                     }
                     break;
+
+                case "buscar_genero":
+                    System.out.println("Busca los artistas de ese genero");
+                    genero= mapa.get("genero");
+                    try{
+
+                        con = DriverManager.getConnection(Config.URL, Config.USERDB, Config.PASSDB);
+
+                        String sql = "Select nombre from `artista` WHERE genero = '"+genero+"'";
+                        PreparedStatement ps = con.prepareStatement(sql);
+                        ResultSet rs= ps.executeQuery();
+
+                        String mensaje="type|rbusca_genero";
+                        int i=0;
+                        if(rs.next()) {
+                            mensaje=mensaje+";genero|"+ genero;
+                            mensaje =mensaje+";artista_"+i+"|"+ rs.getString(1);
+                            i++;
+                        }
+                        while(rs.next()){
+                            mensaje =mensaje+";artista_"+i+"|"+ rs.getString(1);
+                            i++;
+
+                        }
+                        mensaje=mensaje+";cont|"+i+"\n";
+
+                        try {
+                            sendUDPMessage(mensaje);
+
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        ps.close();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }finally{
+                        try {
+                            if(con != null) {
+                                con.close();
+                            }
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    break;
                 default:
                     System.out.print("");
             }
