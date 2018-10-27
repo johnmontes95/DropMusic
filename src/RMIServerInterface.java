@@ -51,5 +51,6 @@ public interface RMIServerInterface extends java.rmi.Remote {
     Album buscarCanciones(Album al) throws java.rmi.RemoteException;
 
     ArrayList<Album> buscarAlbum(String al) throws java.rmi.RemoteException;
+    ArrayList<Artista> buscarGenero(String genero) throws java.rmi.RemoteException;
     //public boolean login(String user, String pass) throws java.rmi.RemoteException;
 }
