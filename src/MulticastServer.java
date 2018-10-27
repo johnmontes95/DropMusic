@@ -806,10 +806,10 @@ public class MulticastServer extends Thread{
                 case "upermisos":
                     System.out.println("Actualizar permisos");
                     usu= mapa.get("usuario");
-                    String editor =   usu= mapa.get("editor");
+                    String editor = mapa.get("editor");
                     try{
                         con = DriverManager.getConnection(Config.URL, Config.USERDB, Config.PASSDB);
-                        String sql1 = "select * from persona where (usuario, privilegios)=(?, ?)";
+                        String sql1 = "select * from persona where usuario=? and privilegios=?";
                         String sql = "update persona set privilegios = 'editor' where usuario = ?";
                         PreparedStatement ps = con.prepareStatement(sql1);
                         PreparedStatement ps1 = con.prepareStatement(sql);
@@ -818,6 +818,7 @@ public class MulticastServer extends Thread{
                         ResultSet rs = ps.executeQuery();
                         String mensaje = null;
                         if(rs.next()){
+                            ps1.setString(1, usu);
                             int i = ps1.executeUpdate();
                             if (i==1) {
                                 mensaje = "type|pupdate;actualizados|" + "true";

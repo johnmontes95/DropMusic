@@ -366,12 +366,9 @@ public class RMIClient {
 
                    if(r){
                        System.out.println("La cancion ha sido editado correctamente.");
-                   }else{
-                       System.out.println("No ha sido editada la cancion");
                    }
                } catch (RemoteException e) {
-                   System.out.println("No se pudo editar la cancion.");
-                   e.printStackTrace();
+                   System.out.println(e.getMessage());
                }
                menuCrearCancion(server);
 
@@ -636,7 +633,6 @@ public class RMIClient {
     public static void main(String args[]) {
         try {
             RMIServerInterface server = (RMIServerInterface) LocateRegistry.getRegistry(7000).lookup("servidor");
-            System.out.println(server.sayHello());
             RMIClientImp cliente = null;
             int intentos = 0;
             int n;
@@ -678,6 +674,12 @@ public class RMIClient {
                             if(r){
                                 try {
                                     r = server.login(usu, pass);
+                                    try {
+                                        cliente = new RMIClientImp(usu);
+                                        server.addCliente(cliente);
+                                    } catch (RemoteException e1) {
+                                        e1.getMessage();
+                                    }
                                 }catch(RemoteException e){
                                     System.out.println(e.getMessage());
                                 }
@@ -702,6 +704,7 @@ public class RMIClient {
 
                             try {
                                 cliente = new RMIClientImp(user);
+                                server.addCliente(cliente);
                             } catch (RemoteException e1) {
                                 e1.getMessage();
                             }

@@ -299,8 +299,9 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                     sendUDPMessage(datos);
                     String msg = (String) mensajeUDP(receiveUDPMessage().trim());
                     r = msg.equals("true");
-                    if(!a.getDescripcion().equals(n.getDescripcion())){
-                        enviarMensajeAClientes("Se ha editado el album " + a.getNombre() + " del artista " + a.getA().getNombre());
+                    if(!a.getDescripcion().equals(n.getDescripcion()) && r){
+                        String mensaje = "Se ha editado el album " + a.getNombre() + " del artista " + a.getA().getNombre();
+                        enviarMensajeAClientes(mensaje);
                     }
                 }
             }else{
