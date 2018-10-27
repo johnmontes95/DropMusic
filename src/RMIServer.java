@@ -1,4 +1,3 @@
-
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -8,11 +7,12 @@ import java.rmi.*;
 import java.rmi.server.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ArrayList;
 
 public class RMIServer extends UnicastRemoteObject implements RMIServerInterface, Runnable{
+
     List<RMIClientInterface> lista;
     private static String MULTICAST_ADDRESS = "224.0.224.0";
     private static int PORT = 4321;
@@ -35,11 +35,11 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
     @Override
     public void enviarMensajeACliente(String msg, String cliente) throws RemoteException {
-      /*  for(RMIClientInterface c : lista) {
+        for(RMIClientInterface c : lista) {
             if (c.getUsuario().equals(cliente)) {
-                c.mensaje();
+                c.mensaje(msg);
             }
-        }*/
+        }
     }
 
     @Override
@@ -48,6 +48,26 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             System.out.println(c.getUsuario());
             c.mensaje(msg);
         }
+    }
+
+    @Override
+    public void cambiarPermisos(String editor, String usu) throws RemoteException {
+        String datos = "type|upermisos;usuario|" + usu + "\n";
+
+        try {
+            sendUDPMessage(datos);
+            String msg = (String) mensajeUDP(receiveUDPMessage().trim());
+            if(msg.equals("true")){
+                String mensaje = "El usuario " + editor + " ha cambiado sus permisos a editor.";
+                enviarMensajeACliente(mensaje, usu);
+            }else{
+                throw new RemoteException("El usuario no existe.");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RemoteException("Ha ocurrido un error al actualizar los permisos del usuario.");
+        }
+
     }
 
     public String sayHello() throws RemoteException {
@@ -91,7 +111,8 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                 r = true;
             }
 
-            enviarMensajeAClientes("Se ha logueado el usuario: " + user);
+            enviarMensajeAClientes("Se ha logueado " + user);
+            enviarMensajeACliente("Mensaje a john", "john");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -192,9 +213,9 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
         try {
 
-                sendUDPMessage(datos);
-                String msg = (String) mensajeUDP(receiveUDPMessage().trim());
-                r = msg.equals("true");
+            sendUDPMessage(datos);
+            String msg = (String) mensajeUDP(receiveUDPMessage().trim());
+            r = msg.equals("true");
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -214,7 +235,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             if(existeArtista(a.getA().getNombre())) {
                 if (estaAlbum(a.getNombre(), a.getA().getNombre())) {
 
-                    System.out.println("Ya existe ese album");
+                    throw new RemoteException("Ya existe ese album");
                 }else {
 
                     sendUDPMessage(datos);
@@ -304,7 +325,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                 String msg = (String) mensajeUDP(receiveUDPMessage().trim());
                 r = msg.equals("true");
 
-                }
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -342,7 +363,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                 //comprobar si esta el album
                 if (!estaAlbum(c.getAl().getNombre(),c.getAl().getA().getNombre())) {
                     //Si no esta se crea el album (Este metodo se encarga tambien de crear el artista si no existiese)
-                   // c.getAl().setDescripcion("Desconoccida");
+                    // c.getAl().setDescripcion("Desconoccida");
                     anadirAlbum(c.getAl());
                 }
 
@@ -491,7 +512,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                 break;
             case "rdelete_album":
                 msg=mapa.get("delete");
-            break;
+                break;
             case "rexiste_cancion":
                 msg=mapa.get("existe");
                 break;
@@ -501,6 +522,8 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             case "redit_cancion":
                 msg=mapa.get("editado");
                 break;
+            case "pupdate":
+                msg = mapa.get("actualizados");
             default:
 
 

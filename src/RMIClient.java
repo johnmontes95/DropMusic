@@ -433,7 +433,7 @@ public class RMIClient {
         try {
             RMIServerInterface server = (RMIServerInterface) LocateRegistry.getRegistry(7000).lookup("servidor");
             System.out.println(server.sayHello());
-            RMIClientInterface cliente = null;
+            RMIClientImp cliente = null;
            // Artista a = server.obtenerArtista("pedro");
             //a.mostrar();
             int n;
@@ -526,7 +526,12 @@ public class RMIClient {
                             break;
                         case 4:
                             break;
-                        case 55:
+                        case 5:
+                            System.out.println("Vas a cambiar los permisos de un usuario");
+                            sc.nextLine();
+                            System.out.println("Introduce el nombre del usuario:");
+                            String usuario = sc.nextLine();
+                            server.cambiarPermisos(cliente.getUsuario(), usuario);
                             break;
                         case 6:
                             break;
@@ -543,21 +548,12 @@ public class RMIClient {
 
                 }while (n!=9);
 
-
-
-
-
             }
 
         } catch (NotBoundException e) {
             e.printStackTrace();
         } catch (RemoteException e) {
-            e.printStackTrace();
+           e.getMessage();
         }
-    }
-
-    @Override
-    public void mensaje(String msg) throws RemoteException {
-        System.out.println(msg);
     }
 }
