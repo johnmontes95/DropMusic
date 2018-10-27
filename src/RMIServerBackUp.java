@@ -11,14 +11,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class RMIServerReplica extends UnicastRemoteObject implements RMIServerInterface, Runnable{
+public class RMIServerBackUp extends UnicastRemoteObject implements RMIServerInterfaceReplica, Runnable{
 
     List<RMIClientInterface> lista;
     private static String MULTICAST_ADDRESS = "224.0.224.0";
     private static int PORT = 4321;
     private long SLEEP_TIME = 5000;
 
-    public RMIServerReplica() throws RemoteException{
+    public RMIServerBackUp() throws RemoteException{
         super();
         lista = new ArrayList<>();
     }
@@ -113,9 +113,6 @@ public class RMIServerReplica extends UnicastRemoteObject implements RMIServerIn
             if(msg.equals("on")){
                 r = true;
             }
-
-            enviarMensajeAClientes("Se ha logueado " + user);
-            enviarMensajeACliente("Mensaje a john", "john");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -216,9 +213,9 @@ public class RMIServerReplica extends UnicastRemoteObject implements RMIServerIn
 
         try {
 
-            sendUDPMessage(datos);
-            String msg = (String) mensajeUDP(receiveUDPMessage().trim());
-            r = msg.equals("true");
+                sendUDPMessage(datos);
+                String msg = (String) mensajeUDP(receiveUDPMessage().trim());
+                r = msg.equals("true");
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -445,7 +442,26 @@ public class RMIServerReplica extends UnicastRemoteObject implements RMIServerIn
         return r;
     }
 
+    @Override
+    public Artista buscarArtista(Artista a) {
 
+        String datos = "type|buscar_artista;nombre|" + a.getNombre() +"\n";
+        Artista n=null;
+        try {
+            // Si no existe el artista no se ejecuta
+
+            if (existeArtista(a.getNombre())) {
+                sendUDPMessage(datos);
+
+                n = (Artista) mensajeUDP(receiveUDPMessage().trim());
+
+
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return n;
+    }
 
     public String receiveUDPMessage() throws IOException {
         byte[] buffer=new byte[1024];
@@ -530,6 +546,26 @@ public class RMIServerReplica extends UnicastRemoteObject implements RMIServerIn
                 break;
             case "pupdate":
                 msg = mapa.get("actualizados");
+                break;
+            case "rbusca_artista":
+                msg = new Artista(mapa.get("nombre"), mapa.get("genero"));
+                int i =Integer.parseInt( mapa.get("cont"));
+                String nombre;
+                String desc;
+                Album al=null;
+
+                for(int j=0;j<=i;j++){
+
+                    nombre=mapa.get("item_"+ j);
+                    al = new Album();
+                    al.setNombre(nombre);
+                    desc=mapa.get("desc_"+ j);
+                    al.setDescripcion(desc);
+                    ((Artista) msg).aniadirAlbum(al);
+
+
+                }
+
             default:
 
 
@@ -555,9 +591,9 @@ public class RMIServerReplica extends UnicastRemoteObject implements RMIServerIn
        /* System.getProperties().put("java.security.policy", "policy.all");
         System.setSecurityManager(new RMISecurityManager());*/
         try {
-            RMIServerReplica server = new RMIServerReplica();
-            Registry r = LocateRegistry.createRegistry(7001);
-            r.rebind("servidor", server);
+            RMIServerBackUp server = new RMIServerBackUp();
+            Registry r = LocateRegistry.createRegistry(8000);
+            r.rebind("servidorsecundario", server);
             System.out.println("Servidor iniciado.");
             Thread client = new Thread(server);
             client.start();

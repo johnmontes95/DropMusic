@@ -35,13 +35,6 @@ public class Artista implements Serializable {
         return albunes;
     }
 
-    public void mostrarAlbum(){
-
-        for (Album a:albunes){
-
-            a.
-        }
-    }
 
     public void aniadirAlbum(Album a) {
         albunes.add(a);

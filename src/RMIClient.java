@@ -472,6 +472,7 @@ public class RMIClient {
             RMIServerInterface server = (RMIServerInterface) LocateRegistry.getRegistry(7000).lookup("servidor");
             System.out.println(server.sayHello());
             RMIClientImp cliente = null;
+            int intentos = 0;
             int n;
             boolean r = false;
             do{
@@ -577,6 +578,19 @@ public class RMIClient {
                         case 3:
                             break;
                         case 4:
+                            Scanner scan = new Scanner(System.in);
+                            System.out.println("Escribir critica a álbum");
+                            System.out.println("Escribe el nombre del artista del álbum");
+                            String ar = scan.nextLine();
+                            sc.nextLine();
+                            System.out.println("Escribe el nombre del álbum");
+                            String album = scan.nextLine();
+                            scan.nextLine();
+                            int n = 0;
+                            do{
+                                System.out.println("Puntuación del álbum");
+                                n = scan.nextInt();
+                            }while(n.);
                             break;
                         case 5:
                             System.out.println("Vas a cambiar los permisos de un usuario");
@@ -608,6 +622,7 @@ public class RMIClient {
         } catch (NotBoundException e) {
             e.printStackTrace();
         } catch (RemoteException e) {
+            System.out.println("Servidor desconectado.");
            e.getMessage();
         }
     }
