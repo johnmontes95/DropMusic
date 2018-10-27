@@ -22,6 +22,12 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
     public RMIServer() throws java.rmi.RemoteException{
         super();
         lista = new ArrayList<>();
+        try {
+            Registry registry = LocateRegistry.getRegistry(8000);
+            stub = (RMIServerInterfaceReplica) registry.lookup(SERVER_BIND_NAME);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
