@@ -59,4 +59,10 @@ public class Cancion implements Serializable {
         System.out.println("Album: " + this.getAl().getNombre());
         System.out.println("Duracion: " + this.getDuracion());
     }
+    public void datosCancionAlbum(){
+        System.out.println("Nombre: " + this.getTitulo());
+        System.out.println("Duracion: " + this.getDuracion());
+    }
+
+
 }

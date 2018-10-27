@@ -1,7 +1,10 @@
+import java.util.ArrayList;
 import java.util.Scanner;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RMIClient {
 
@@ -418,6 +421,12 @@ public class RMIClient {
    private static void menuBuscar(RMIServerInterface server){
                  int n;
 
+                 Artista a;
+                 Album al;
+                 Cancion c;
+                 int pos;
+
+
            do {
 
                System.out.println("");
@@ -439,10 +448,24 @@ public class RMIClient {
                        String artista = sc.nextLine();
 
                        try {
-                           Artista a=new Artista();
+                           a=new Artista();
                            a.setNombre(artista);
                            a=  server.buscarArtista(a);
-                           System.out.println(a.getNombre()+a.getGenero());
+                           System.out.println("Artista: "+a.getNombre()+" / Genero: "+a.getGenero());
+                           a.mostrarAlbum();
+
+                           System.out.println("Si quieres ver las canciones de un album introduce el nombre");
+                           String nalbum=sc.nextLine();
+
+
+                           al=new Album();
+                           al.setNombre(nalbum);
+                           al.setA(a);
+                           al=server.buscarCanciones(al);
+
+                           System.out.println("Album: "+al.getNombre()+" / Descripccion: "+al.getDescripcion());
+                           //muesta las canciones
+                           al.verCancionesAlbum();
 
                        } catch (RemoteException e) {
                            System.out.println("No se pudo añadir el album.");
@@ -455,6 +478,63 @@ public class RMIClient {
 
                        break;
                    case 3:
+
+                       System.out.print("Introduzca el nombre del Album a buscar: ");
+                       String album = sc.nextLine();
+                       List <Album> albunes;
+                       try {
+                           albunes=  server.buscarAlbum(album);
+
+
+                           for (Album f:albunes){
+
+                               f.datosAlbumArtista();
+                           }
+
+                           System.out.println("1. Ver las canciones de un album");
+                           System.out.println("2. Ver los datos de ese artista");
+                           System.out.println("3. Salir");
+                           pos=sc.nextInt();
+
+                           switch (pos){
+
+                               case 1:
+                                   int nal;
+                                   do {
+                                       System.out.println("Elige la posicion del album(Empezando por 0)");
+                                       nal = sc.nextInt();
+                                   }while(nal>albunes.size()||nal<0);
+                                   al=albunes.get(nal);
+
+                                   al=server.buscarCanciones(al);
+
+                                   System.out.println("Album: "+al.getNombre()+" / Descripccion: "+al.getDescripcion());
+                                   //muesta las canciones
+                                   al.verCancionesAlbum();
+
+
+                                   break;
+                               case 2:
+                                   do {
+                                       System.out.println("Elige la posicion del artista/album(Empezando por 0)");
+                                       nal = sc.nextInt();
+                                   }while(nal>albunes.size()||nal<0);
+
+                                   //obtienes el objeto artista de ese album en a
+                                   a=albunes.get(nal).getA();
+
+                                   break;
+                               default:
+                                       break;
+
+                           }
+
+
+                       } catch (RemoteException e) {
+                           System.out.println("No se pudo añadir el album.");
+                           e.printStackTrace();
+                       }
+                       menuBuscar(server);
 
                        break;
                    default:

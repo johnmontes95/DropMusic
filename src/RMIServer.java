@@ -450,7 +450,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
     }
 
     @Override
-    public Artista buscarArtista(Artista a) {
+    public Artista buscarArtista(Artista a)throws  RemoteException {
 
         String datos = "type|buscar_artista;nombre|" + a.getNombre() +"\n";
         Artista n=null;
@@ -469,6 +469,50 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         }
         return n;
     }
+
+    public Album buscarCanciones(Album al)throws  RemoteException{
+
+        String datos = "type|buscar_canciones;album|" + al.getNombre() +";artista|"+al.getA().getNombre()+"\n";
+        Album n=null;
+        try {
+            // Si no existe el artista no se ejecuta
+
+            if (estaAlbum(al.getNombre(),al.getA().getNombre())) {
+                sendUDPMessage(datos);
+
+                n = (Album) mensajeUDP(receiveUDPMessage().trim());
+
+
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return n;
+    }
+
+    public ArrayList<Album> buscarAlbum(String al)throws  RemoteException{
+
+        String datos = "type|buscar_album;album|" + al +"\n";
+        ArrayList<Album> albunes=null;
+        try {
+
+                sendUDPMessage(datos);
+                albunes=(ArrayList<Album>) (mensajeUDP(receiveUDPMessage().trim()));
+
+
+
+
+
+
+        } catch (IOException e) {
+            //e.printStackTrace();
+            throw new RemoteException("No se puede obtener el album");
+        }
+        return  albunes;
+
+
+    }
+
 
     public String receiveUDPMessage() throws IOException {
         byte[] buffer=new byte[1024];
@@ -497,6 +541,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
         String[] datos = c.split(";");
         String[] valor = null;
         HashMap<String, String> mapa = new HashMap<>();
+        int i;
         for(String item : datos)
         {
             valor = item.split("\\|");
@@ -505,6 +550,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
         Object msg = null;
         String type = mapa.get("type");
+
         switch(type){
             case "status":
                 msg = mapa.get("logueado");
@@ -556,12 +602,13 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                 break;
             case "rbusca_artista":
                 msg = new Artista(mapa.get("nombre"), mapa.get("genero"));
-                int i =Integer.parseInt( mapa.get("cont"));
+                i =Integer.parseInt( mapa.get("cont"));
                 String nombre;
                 String desc;
                 Album al=null;
+                ((Artista) msg).setnAlbumes(i);
 
-                for(int j=0;j<=i;j++){
+                for(int j=0;j<i;j++){
 
                     nombre=mapa.get("item_"+ j);
                     al = new Album();
@@ -572,7 +619,56 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
 
                 }
+                break;
+            case "rbusca_canciones":
 
+
+
+                Artista a=new Artista();
+                a.setNombre(mapa.get("artista"));
+                msg = new Album(mapa.get("nombre"),a,mapa.get("desc"));
+
+                i =Integer.parseInt( mapa.get("cont"));
+                String titulo;
+                String durac;
+                Cancion ca=null;
+                ((Album)msg).setNumCanciones(i);
+
+                for(int j=0;j<i;j++){
+
+                    titulo=mapa.get("item_"+ j);
+                    ca = new Cancion();
+                    ca.setTitulo(titulo);
+                    durac=mapa.get("durac_"+ j);
+                    ca.setDuracion(Integer.parseInt(durac));
+                    ((Album) msg).anadirCancion(ca);
+
+
+                }
+                break;
+            case "rbusca_album":
+
+
+                Album aal;
+                Artista aa;
+
+                msg = new ArrayList<Album>();
+
+                i =Integer.parseInt( mapa.get("cont"));
+                String album=mapa.get("album");
+                for(int j=0;j<i;j++){
+                    aa=new Artista();
+                    aa.setNombre(mapa.get("artista_"+j));
+                    aal=new Album();
+                    aal.setNombre(album);
+                    aal.setDescripcion(mapa.get("desc_"+j));
+                    aal.setA(aa);
+
+                    ((ArrayList<Album>)msg).add(aal);
+                }
+
+
+                break;
             default:
 
 

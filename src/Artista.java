@@ -7,6 +7,7 @@ public class Artista implements Serializable {
     private String nombre;
     private String genero;
     private List<Album> albunes;
+    private int nAlbumes;
 
     public Artista(String n, String g){
 
@@ -17,6 +18,14 @@ public class Artista implements Serializable {
     public Artista(){
 
         albunes=new ArrayList<>();
+    }
+
+    public int getnAlbumes() {
+        return nAlbumes;
+    }
+
+    public void setnAlbumes(int nAlbumes) {
+        this.nAlbumes = nAlbumes;
     }
 
     public String getNombre() {
@@ -35,6 +44,13 @@ public class Artista implements Serializable {
         return albunes;
     }
 
+    public void mostrarAlbum(){
+
+        for (Album a:albunes){
+
+            a.datosAlbum();
+        }
+    }
 
     public void aniadirAlbum(Album a) {
         albunes.add(a);
