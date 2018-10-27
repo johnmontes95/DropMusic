@@ -561,6 +561,9 @@ public class MulticastServer extends Thread{
                         }
                     }
                     break;
+
+
+
                 case "delete_album":
                     System.out.println("Eliminar album");
                     album= mapa.get("nombre");
