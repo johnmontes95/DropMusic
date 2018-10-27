@@ -803,22 +803,27 @@ public class MulticastServer extends Thread{
                 case "upermisos":
                     System.out.println("Actualizar permisos");
                     usu= mapa.get("usuario");
-                    System.out.println(usu);
+                    String editor =   usu= mapa.get("editor");
                     try{
                         con = DriverManager.getConnection(Config.URL, Config.USERDB, Config.PASSDB);
-
+                        String sql1 = "select * from persona where (usuario, privilegios)=(?, ?)";
                         String sql = "update persona set privilegios = 'editor' where usuario = ?";
-                        PreparedStatement ps = con.prepareStatement(sql);
-                        ps.setString(1, usu);
-
+                        PreparedStatement ps = con.prepareStatement(sql1);
+                        PreparedStatement ps1 = con.prepareStatement(sql);
+                        ps.setString(1, editor);
+                        ps.setString(2, "editor");
+                        ResultSet rs = ps.executeQuery();
                         String mensaje = null;
-                        int i = ps.executeUpdate();
-                        if (i==1) {
-                            mensaje = "type|pupdate;actualizados|" + "true";
-                        } else {
+                        if(rs.next()){
+                            int i = ps1.executeUpdate();
+                            if (i==1) {
+                                mensaje = "type|pupdate;actualizados|" + "true";
+                            } else {
+                                mensaje = "type|pupdate;actualizados|" + "false";
+                            }
+                        }else{
                             mensaje = "type|pupdate;actualizados|" + "false";
                         }
-
 
                         try {
                             sendUDPMessage(mensaje);
@@ -975,6 +980,52 @@ public class MulticastServer extends Thread{
 
                         }
                         mensaje=mensaje+";cont|"+i+"\n";
+
+                        try {
+                            sendUDPMessage(mensaje);
+
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        ps.close();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }finally{
+                        try {
+                            if(con != null) {
+                                con.close();
+                            }
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    break;
+                case "a_crit":
+                    System.out.println("Insertar crítica.");
+                    String autor = mapa.get("autor");
+                    artista = mapa.get("artista");
+                    album= mapa.get("album");
+                    int punt = Integer.parseInt(mapa.get("punt"));
+                    String crit = mapa.get("crit");
+                    try{
+                        con = DriverManager.getConnection(Config.URL, Config.USERDB, Config.PASSDB);
+
+                        String sql = "insert into critica values(?, ?, ?, ?, ?)";
+                        PreparedStatement ps = con.prepareStatement(sql);
+
+                        ps.setString(1, autor);
+                        ps.setString(2, artista);
+                        ps.setString(3, album);
+                        ps.setInt(4, punt);
+                        ps.setString(5, crit);
+                        int i = ps.executeUpdate();
+
+                        String mensaje = null;
+                        if(i == 1){
+                            mensaje = "type|t_crit;aniadida|true";
+                        }else{
+                            mensaje = "type|t_crit;aniadida|false";
+                        }
 
                         try {
                             sendUDPMessage(mensaje);
