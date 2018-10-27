@@ -70,12 +70,6 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
     }
 
-    public String sayHello() throws RemoteException {
-        System.out.println("print do lado do servidor...!.");
-
-        return "Bienvenido a DropMusic.";
-    }
-
 
 
     @Override
@@ -86,21 +80,11 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             sendUDPMessage(datos);
             r = ((String) mensajeUDP(receiveUDPMessage().trim())).equals("true");
         } catch (IOException e) {
-            e.printStackTrace();
             throw new RemoteException("Ha ocurrido un error al registrarse.");
         }
         return r;
     }
 
-/*    public Persona getPersona(String nomUsu) throws RemoteException {
-        String datos = "type|g_persona;nombre|" + nomUsu + "\n";
-        try {
-            sendUDPMessage(datos);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return true;
-    }*/
 
     @Override
     public boolean login(String user, String pass) throws RemoteException {
@@ -131,7 +115,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             String msg = (String) mensajeUDP(receiveUDPMessage().trim());
             r = msg.equals("true");
         } catch (IOException e) {
-            e.printStackTrace();
+           throw new RemoteException("Ha ocurrido un error.");
         }
         return r;
     }
@@ -168,10 +152,12 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                 sendUDPMessage(datos);
                 String msg = (String) mensajeUDP(receiveUDPMessage().trim());
                 r = msg.equals("true");
+            }else{
+                throw new RemoteException("No existe el artista buscado");
             }
 
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RemoteException("Ha ocurrido un error");
         }
         return r;
     }
@@ -183,9 +169,12 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             if(existeArtista(nombre)) {
                 sendUDPMessage(datos);
                 a = (Artista) mensajeUDP(receiveUDPMessage().trim());
+            }else{
+                throw new RemoteException("No existe el artista buscado");
             }
+
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RemoteException("No existe el artista buscado");
         }
         return a;
     }
@@ -203,7 +192,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                 r = msg.equals("true");
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RemoteException("Ha ocurrido un error.");
         }
         return r;
     }
@@ -222,7 +211,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                 r = msg.equals("true");
 
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RemoteException("Ha ocurrido un error.");
         }
         return r;
 
@@ -258,7 +247,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
 
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RemoteException("Ha ocurrido un error.");
         }
         return r;
     }
@@ -298,13 +287,18 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
                     sendUDPMessage(datos);
                     String msg = (String) mensajeUDP(receiveUDPMessage().trim());
                     r = msg.equals("true");
+                    if(!a.getDescripcion().equals(n.getDescripcion())){
+                        enviarMensajeAClientes("Se ha editado el album " + a.getNombre() + " del artista " + a.getA().getNombre());
+                    }
                 }
+            }else{
+                throw new RemoteException("No existe el album");
             }
 
 
 
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RemoteException("No existe el album");
         }
         return r;
 
@@ -331,7 +325,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RemoteException("No existe el album");
         }
         return r;
     }
@@ -348,7 +342,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             String msg = (String) mensajeUDP(receiveUDPMessage().trim());
             r = msg.equals("true");
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RemoteException("No existe el album");
         }
         return r;
     }
@@ -379,7 +373,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
 
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RemoteException("No existe el album");
         }
         return r;
     }
@@ -420,7 +414,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
 
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RemoteException("No existe el album");
         }
         return r;
 
@@ -441,7 +435,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RemoteException("No existe el album");
         }
         return r;
     }
@@ -462,7 +456,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RemoteException("No existe el album");
         }
         return n;
     }
@@ -479,10 +473,11 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
 
                 n = (Album) mensajeUDP(receiveUDPMessage().trim());
 
-
+            }else{
+                throw new RemoteException("No existe el álbum");
             }
         } catch (IOException e) {
-            e.printStackTrace();
+           throw new RemoteException("Ha ocurrido un error");
         }
         return n;
     }
@@ -527,7 +522,7 @@ public class RMIServer extends UnicastRemoteObject implements RMIServerInterface
             artistas=(ArrayList<Artista>) (mensajeUDP(receiveUDPMessage().trim()));
 
         } catch (IOException e) {
-            //e.printStackTrace();
+            //throw new RemoteException("No existe el album");
             throw new RemoteException("No se puede obtener los artistas de ese genero");
         }
         return  artistas;
